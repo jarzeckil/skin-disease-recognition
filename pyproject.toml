@@ -34,7 +34,7 @@ requires-python = "~=3.13.0"
 line-length = 99
 indent-width = 4
 src = ["src"]
-include = ["pyproject.toml", "skin_disease_recognition/**/*.py"]
+include = ["pyproject.toml", "skin_disease_recognition/**/*.py", "notebooks/*"]
 
 [tool.ruff.lint]
 # Select which rule categories are enabled
