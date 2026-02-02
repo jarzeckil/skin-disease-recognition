@@ -31,12 +31,14 @@ clean:
 lint:
 	uv run ruff format --check
 	uv run ruff check
+	uv run ty check
 
 ## Format source code with ruff
 .PHONY: format
 format:
 	uv run ruff check --fix
 	uv run ruff format
+	uv run ty check
 
 
 
