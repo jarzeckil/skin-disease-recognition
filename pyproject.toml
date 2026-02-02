@@ -1,0 +1,46 @@
+[build-system]
+requires = ["flit_core >=3.2,<4"]
+build-backend = "flit_core.buildapi"
+
+[project]
+name = "skin_disease_recognition"
+version = "0.0.1"
+description = "A short description of the project."
+authors = [
+  { name = "Łukasz Jarzęcki" },
+]
+license = { file = "LICENSE" }
+readme = "README.md"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License"
+]
+dependencies = [
+    "kagglehub>=0.4.2",
+    "pip",
+    "pytest",
+    "python-dotenv",
+    "ruff",
+]
+requires-python = "~=3.13.0"
+
+
+[tool.ruff]
+line-length = 99
+indent-width = 4
+src = ["src"]
+include = ["pyproject.toml", "skin_disease_recognition/**/*.py"]
+
+[tool.ruff.lint]
+# Select which rule categories are enabled
+# (E: pycodestyle errors, F: pyflakes, I: import-related, B: bugbears, UP: plugins)
+select = ["E", "F", "I", "UP", "B"]
+fixable = ["ALL"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["skin_disease_recognition"]
+force-sort-within-sections = true
+
+[tool.ruff.format]
+quote-style = "single"
+
