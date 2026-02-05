@@ -1,0 +1,11 @@
+defaults:
+  - _self_
+
+data:
+  dir: "data/raw/SkinDisease"
+  train_path: "data/raw/SkinDisease/train"
+  test_path: "data/raw/SkinDisease/test"
+
+  batch_size: 32
+  num_workers: 4
+  image_size: 224
