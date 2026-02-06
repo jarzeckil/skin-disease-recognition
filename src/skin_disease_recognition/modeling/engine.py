@@ -1,20 +1,22 @@
 import numpy as np
 import torch
-from torchmetrics import Accuracy, Precision, Recall, F1Score
+from torch import Tensor, nn
 from torch.optim import Optimizer
-from torch import nn, Tensor
 from torch.utils.data import DataLoader
+import torchmetrics
+from torchmetrics import Accuracy, F1Score, Precision, Recall
 
 
 class Trainer:
     def __init__(
-            self,
-            model: nn.Module,
-            train_loader: DataLoader,
-            test_loader: DataLoader,
-            optimizer: Optimizer,
-            loss_fn: nn.Module,
-            device: str
+        self,
+        model: nn.Module,
+        train_loader: DataLoader,
+        test_loader: DataLoader,
+        optimizer: Optimizer,
+        loss_fn: nn.Module,
+        device: str,
+        num_classes,
     ):
         self.model = model
         self.train_loader = train_loader
@@ -23,7 +25,17 @@ class Trainer:
         self.loss_fn = loss_fn
         self.device = device
 
+        self.metrics = torchmetrics.MetricCollection(
+            [
+                Accuracy(task='multiclass', num_classes=num_classes),
+                Precision(task='multiclass', num_classes=num_classes, average='macro'),
+                Recall(task='multiclass', num_classes=num_classes, average='macro'),
+                F1Score(task='multiclass', num_classes=num_classes, average='macro'),
+            ]
+        ).to(device=self.device)
+
     def train_one_epoch(self, epoch_index):
+        self.model.train()
         losses = []
         n = len(self.train_loader)
         for i, data in enumerate(self.train_loader):
@@ -44,30 +56,17 @@ class Trainer:
 
             self.optimizer.step()
 
-            if i%100 == 0:
+            if i % 100 == 0:
                 print(f'Epoch {epoch_index}, Batch {i}/{n}')
         avg_loss = np.mean(losses)
         print(f'Epoch {epoch_index} finished with average loss {avg_loss}')
         return avg_loss
 
     def evaluate(self, num_classes):
-        f1 = F1Score(task='multiclass', num_classes=num_classes)
-        precision = Precision(task='multiclass', num_classes=num_classes)
-        recall = Recall(task='multiclass', num_classes=num_classes)
-        accuracy = Accuracy(task='multiclass', num_classes=num_classes)
-
         self.model.eval()
 
-        metrics = {
-            'accuracy': [],
-            'precision': [],
-            'recall': [],
-            'f1': []
-        }
-
         with torch.no_grad():
-            for i, data in enumerate(self.test_loader):
-
+            for data in self.test_loader:
                 images: Tensor
                 labels: Tensor
                 images, labels = data
@@ -77,19 +76,6 @@ class Trainer:
 
                 pred = self.model(images)
 
-                metrics['accuracy'].append(accuracy(pred, labels))
-                metrics['precision'].append(precision(pred, labels))
-                metrics['recall'].append(recall(pred, labels))
-                metrics['f1'].append(f1(pred, labels))
+                self.metrics.update(pred, labels)
 
-        metrics_avg = {}
-        for metric in metrics:
-            metrics_avg[metric] = np.mean(metrics[metric])
-
-        return metrics_avg
-
-
-
-
-
-
+        return self.metrics.compute()
