@@ -5,7 +5,7 @@ from torchvision.datasets import ImageFolder
 
 class SkinDataset(Dataset):
     def __init__(self, root_dir, transform = None):
-        super(self).__init__()
+        super().__init__()
         self.base_dataset = ImageFolder(root=root_dir)
         self.classes = self.base_dataset.classes
         self.targets = self.base_dataset.targets
