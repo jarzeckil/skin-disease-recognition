@@ -51,7 +51,7 @@ explicit = true
 line-length = 88
 indent-width = 4
 src = ["src"]
-include = ["pyproject.toml", "skin_disease_recognition/**/*.py", "notebooks/*"]
+include = ["pyproject.toml", "src/skin_disease_recognition/**/*.py", "notebooks/*"]
 
 [tool.ruff.lint]
 # Select which rule categories are enabled
