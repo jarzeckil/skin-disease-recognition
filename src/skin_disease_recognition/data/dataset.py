@@ -4,7 +4,7 @@ from torchvision.datasets import ImageFolder
 
 
 class SkinDataset(Dataset):
-    def __init__(self, root_dir, transform = None):
+    def __init__(self, root_dir, transform=None):
         super().__init__()
         self.base_dataset = ImageFolder(root=root_dir)
         self.classes = self.base_dataset.classes
@@ -19,7 +19,7 @@ class SkinDataset(Dataset):
 
         image = cv2.imread(path)
         if image is None:
-            raise FileNotFoundError(f"Failed to load image at: {path}")
+            raise FileNotFoundError(f'Failed to load image at: {path}')
 
         image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 

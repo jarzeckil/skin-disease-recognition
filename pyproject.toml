@@ -28,6 +28,7 @@ dependencies = [
     "ruff",
     "seaborn>=0.13.2",
     "torch>=2.10.0",
+    "torchmetrics>=1.0.3",
     "torchvision>=0.25.0",
     "ty>=0.0.14",
 ]
@@ -47,10 +48,10 @@ url = "https://download.pytorch.org/whl/cu130"
 explicit = true
 
 [tool.ruff]
-line-length = 99
+line-length = 88
 indent-width = 4
 src = ["src"]
-include = ["pyproject.toml", "skin_disease_recognition/**/*.py", "notebooks/*"]
+include = ["pyproject.toml", "src/skin_disease_recognition/**/*.py", "notebooks/*"]
 
 [tool.ruff.lint]
 # Select which rule categories are enabled
