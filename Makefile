@@ -16,7 +16,10 @@ PYTHON_INTERPRETER = python
 requirements:
 	uv sync
 	
-
+## Download dataset
+.PHONY: dataset
+dataset:
+	uv run src/skin_disease_recognition/download_dataset.py
 
 
 ## Delete all compiled Python files
