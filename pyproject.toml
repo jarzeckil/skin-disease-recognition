@@ -27,17 +27,19 @@ dependencies = [
     "python-dotenv",
     "ruff",
     "seaborn>=0.13.2",
+    "torch>=2.10.0",
+    "torchvision>=0.25.0",
     "ty>=0.0.14",
 ]
 requires-python = "~=3.11.0"
 
 [tool.uv.sources]
-torch = [
-    { index = "pytorch" },
-]
-torchvision = [
-    { index = "pytorch" },
-]
+torch = { index = "pytorch_cpu" }
+torchvision = { index = "pytorch_cpu" }
+
+[[tool.uv.index]]
+name = "pytorch_cpu"
+url = "https://download.pytorch.org/whl/cpu"
 
 [[tool.uv.index]]
 name = "pytorch"
