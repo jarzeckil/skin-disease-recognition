@@ -62,7 +62,7 @@ class Trainer:
         print(f'Epoch {epoch_index} finished with average loss {avg_loss}')
         return avg_loss
 
-    def evaluate(self, num_classes):
+    def evaluate(self):
         self.model.eval()
 
         with torch.no_grad():
