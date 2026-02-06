@@ -33,7 +33,7 @@ def make_loaders(cfg: DictConfig):
     test_transform = get_transforms(cfg, 'test')
 
     train_dataset = SkinDataset(cfg.data.train_path, train_transform)
-    test_dataset = SkinDataset(cfg.data.test_path / 'test', test_transform)
+    test_dataset = SkinDataset(cfg.data.test_path, test_transform)
 
     class_weights = 1.0 / np.bincount(train_dataset.targets)
     sample_weights = class_weights[train_dataset.targets]
