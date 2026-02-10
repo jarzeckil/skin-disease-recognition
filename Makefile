@@ -43,6 +43,11 @@ format:
 	uv run ruff format
 	uv run ty check
 
+## Run mlflow ui
+.PHONY: mlflow
+mlflow:
+	uv run mlflow ui
+
 
 
 ## Run tests
