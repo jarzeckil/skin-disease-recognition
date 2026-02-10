@@ -1,0 +1,6 @@
+model_name: 'resnet-18'
+model_type: 'resnet'
+
+estimator:
+  _target_: torchvision.models.resnet18
+  weights: null
