@@ -1,4 +1,7 @@
+import logging
 from pathlib import Path
+
+logging.basicConfig(level=logging.INFO)
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 
