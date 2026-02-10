@@ -24,6 +24,7 @@ dependencies = [
     "pandas>=3.0.0",
     "pip",
     "pre-commit>=4.5.1",
+    "protobuf~=5.0",
     "pytest",
     "python-dotenv",
     "ruff",
