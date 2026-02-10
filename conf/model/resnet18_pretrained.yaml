@@ -1,0 +1,7 @@
+model_name: 'resnet-18-pretrained-nojitter'
+model_type: 'resnet'
+pretrained: true
+
+estimator:
+  _target_: torchvision.models.resnet18
+  weights: 'DEFAULT'
