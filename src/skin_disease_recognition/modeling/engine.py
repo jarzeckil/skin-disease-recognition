@@ -1,6 +1,7 @@
 import logging
 
 import mlflow
+import mlflow.pytorch
 import numpy as np
 import torch
 from torch import Tensor, nn
@@ -10,6 +11,7 @@ import torchmetrics
 from torchmetrics import Accuracy, F1Score, Precision, Recall
 
 logger = logging.getLogger(__name__)
+
 
 class Trainer:
     def __init__(
@@ -32,9 +34,15 @@ class Trainer:
         self.metrics = torchmetrics.MetricCollection(
             {
                 'accuracy': Accuracy(task='multiclass', num_classes=num_classes),
-                'precision': Precision(task='multiclass', num_classes=num_classes, average='macro'),
-                'recall': Recall(task='multiclass', num_classes=num_classes, average='macro'),
-                'f1': F1Score(task='multiclass', num_classes=num_classes, average='macro'),
+                'precision': Precision(
+                    task='multiclass', num_classes=num_classes, average='macro'
+                ),
+                'recall': Recall(
+                    task='multiclass', num_classes=num_classes, average='macro'
+                ),
+                'f1': F1Score(
+                    task='multiclass', num_classes=num_classes, average='macro'
+                ),
             }
         ).to(device=self.device)
 
@@ -52,9 +60,9 @@ class Trainer:
 
             self.optimizer.zero_grad()
 
-            outputs = self.model(images)
+            pred = self.model(images)
 
-            loss = self.loss_fn(outputs, labels)
+            loss = self.loss_fn(pred, labels)
             losses.append(loss.item())
             loss.backward()
 
@@ -69,6 +77,8 @@ class Trainer:
         self.model.eval()
         self.metrics.reset()
 
+        losses = []
+
         with torch.no_grad():
             for data in self.test_loader:
                 images: Tensor
@@ -80,29 +90,36 @@ class Trainer:
 
                 pred = self.model(images)
 
+                loss = self.loss_fn(pred, labels)
+                losses.append(loss.item())
+
                 self.metrics.update(pred, labels)
 
-        return self.metrics.compute().items()
+        score = {k: v.item() for k, v in self.metrics.compute().items()}
+        score['validation_loss'] = np.mean(losses)
+
+        return score
 
     def train(self, max_epochs: int, experiment_name: str, run_name: str):
         mlflow.set_experiment(experiment_name)
 
         with mlflow.start_run(run_name=run_name):
-            losses = []
+            best_f1 = 0.0
             for epoch in range(max_epochs):
                 logger.info(f'Epoch {epoch}')
                 loss = self.train_one_epoch(epoch_index=epoch)
                 logger.info(f'Epoch {epoch} finished with average loss {loss}')
-                losses.append(loss)
 
                 scores = self.evaluate()
                 logger.info(f'Metrics for epoch {epoch}: {scores}')
-                if loss < losses[epoch-1]:
-                    mlflow.pytorch.log_model(pytorch_model=self.model, step=epoch)
-                    mlflow.log_metrics(metrics=scores, step=epoch)
+                curr_f1 = scores.get('f1')
+
+                if best_f1 < curr_f1:
+                    logger.info(f'New model with better F1 found: f1 = {curr_f1}')
+                    best_f1 = curr_f1
+                    mlflow.pytorch.log_model(
+                        pytorch_model=self.model, step=epoch, artifact_path='model'
+                    )
+                mlflow.log_metrics(metrics=scores, step=epoch)
 
             logger.info(f'Run finished after {epoch} epochs')
-
-
-
-
