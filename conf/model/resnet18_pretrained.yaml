@@ -1,4 +1,4 @@
-model_name: 'resnet-18-pretrained-nojitter'
+model_name: 'resnet-18-pretrained'
 model_type: 'resnet'
 pretrained: true
 
