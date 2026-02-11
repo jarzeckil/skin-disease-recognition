@@ -1,8 +1,11 @@
 import logging
+import os
+from typing import Any, cast
 
 import mlflow
 import mlflow.pytorch
 import numpy as np
+from omegaconf import DictConfig, OmegaConf
 import torch
 from torch import Tensor, nn
 from torch.optim import Optimizer
@@ -100,15 +103,21 @@ class Trainer:
 
         return score
 
-    def train(self, max_epochs: int, experiment_name: str, run_name: str):
+    def train(
+        self, max_epochs: int, experiment_name: str, run_name: str, cfg: DictConfig
+    ):
         mlflow.set_experiment(experiment_name)
 
         with mlflow.start_run(run_name=run_name):
+            mlflow.log_params(cast(dict[str, Any], OmegaConf.to_object(cfg)))
+
             best_f1 = 0.0
+            best_model_path = 'best_model_state.pth'
+
             for epoch in range(max_epochs):
                 logger.info(f'Epoch {epoch}')
                 loss = self.train_one_epoch(epoch_index=epoch)
-                logger.info(f'Epoch {epoch} finished with average loss {loss}')
+                logger.info(f'Epoch {epoch} finished. Training loss: {loss}')
 
                 scores = self.evaluate()
                 logger.info(f'Metrics for epoch {epoch}: {scores}')
@@ -117,9 +126,18 @@ class Trainer:
                 if best_f1 < curr_f1:
                     logger.info(f'New model with better F1 found: f1 = {curr_f1}')
                     best_f1 = curr_f1
-                    mlflow.pytorch.log_model(
-                        pytorch_model=self.model, step=epoch, artifact_path='model'
-                    )
+                    torch.save(self.model.state_dict(), best_model_path)
+                scores['training_loss'] = loss
                 mlflow.log_metrics(metrics=scores, step=epoch)
 
-            logger.info(f'Run finished after {epoch} epochs')
+            if best_f1 > 0.0:
+                logger.info('Loading best model and logging to MLflow')
+                self.model.load_state_dict(torch.load(best_model_path))
+                mlflow.pytorch.log_model(
+                    pytorch_model=self.model,
+                    name='model',
+                )
+                if os.path.exists(best_model_path):
+                    os.remove(best_model_path)
+
+            logger.info(f'Run finished after {epoch + 1} epochs')
