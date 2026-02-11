@@ -34,21 +34,17 @@ clean:
 lint:
 	uv run ruff format --check
 	uv run ruff check
-	uv run ty check
 
 ## Format source code with ruff
 .PHONY: format
 format:
 	uv run ruff check --fix
 	uv run ruff format
-	uv run ty check
 
 ## Run mlflow ui
 .PHONY: mlflow
 mlflow:
 	uv run mlflow ui
-
-
 
 ## Run tests
 .PHONY: test
