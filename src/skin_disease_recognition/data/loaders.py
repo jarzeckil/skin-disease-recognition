@@ -27,7 +27,7 @@ def get_transforms(cfg: DictConfig, stage='train'):
                 A.VerticalFlip(),
                 A.Rotate(limit=30, p=0.7),
                 A.ColorJitter(
-                    brightness=0.2, contrast=0.2, saturation=0.2, hue=0.1, p=0.3
+                    brightness=0.2, contrast=0.2, saturation=0.2, hue=0.05, p=0.3
                 ),
                 A.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225)),
                 ToTensorV2(),
