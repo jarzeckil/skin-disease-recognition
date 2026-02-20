@@ -9,6 +9,7 @@ from omegaconf import DictConfig, OmegaConf
 import torch
 from torch import Tensor, nn
 from torch.optim import Optimizer
+from torch.optim.lr_scheduler import ReduceLROnPlateau
 from torch.utils.data import DataLoader
 import torchmetrics
 from torchmetrics import Accuracy, F1Score, Precision, Recall
@@ -23,6 +24,7 @@ class Trainer:
         train_loader: DataLoader,
         test_loader: DataLoader,
         optimizer: Optimizer,
+        scheduler: ReduceLROnPlateau,
         loss_fn: nn.Module,
         device: str,
         num_classes,
@@ -33,6 +35,7 @@ class Trainer:
         self.optimizer = optimizer
         self.loss_fn = loss_fn
         self.device = device
+        self.scheduler = scheduler
 
         self.metrics = torchmetrics.MetricCollection(
             {
@@ -112,6 +115,7 @@ class Trainer:
             mlflow.log_params(cast(dict[str, Any], OmegaConf.to_object(cfg)))
 
             best_f1 = 0.0
+            best_step = 0
             best_model_path = 'best_model_state.pth'
 
             for epoch in range(max_epochs):
@@ -121,21 +125,28 @@ class Trainer:
 
                 scores = self.evaluate()
                 logger.info(f'Metrics for epoch {epoch}: {scores}')
-                curr_f1 = scores.get('f1')
+                curr_f1 = scores['f1']
+                curr_val_loss = scores['validation_loss']
+
+                backbone_lr = self.optimizer.param_groups[0]['lr']
+                head_lr = self.optimizer.param_groups[1]['lr']
+                self.scheduler.step(curr_val_loss)
 
                 if best_f1 < curr_f1:
                     logger.info(f'New model with better F1 found: f1 = {curr_f1}')
                     best_f1 = curr_f1
+                    best_step = epoch
                     torch.save(self.model.state_dict(), best_model_path)
                 scores['training_loss'] = loss
+                scores['backbone_lr'] = backbone_lr
+                scores['head_lr'] = head_lr
                 mlflow.log_metrics(metrics=scores, step=epoch)
 
             if best_f1 > 0.0:
                 logger.info('Loading best model and logging to MLflow')
                 self.model.load_state_dict(torch.load(best_model_path))
                 mlflow.pytorch.log_model(
-                    pytorch_model=self.model,
-                    name='model',
+                    pytorch_model=self.model, name='model', step=best_step
                 )
                 if os.path.exists(best_model_path):
                     os.remove(best_model_path)
