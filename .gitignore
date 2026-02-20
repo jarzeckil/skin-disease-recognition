@@ -197,3 +197,6 @@ outputs
 # mlflow
 mlruns
 mlflow.db
+
+models/*
+!models/.gitkeep
