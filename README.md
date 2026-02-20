@@ -49,3 +49,10 @@ A short description of the project.
 
 --------
 
+## Learned 
+
+- loss plateau
+- learning rate with pretrained weights
+- inbalanced classes
+- metrics for multiclass
+
