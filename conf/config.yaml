@@ -6,6 +6,7 @@ experiment_name: 'SkinDisease'
 device: 'cuda'
 seed: 42
 max_epochs: 20
+freeze_layers: false
 
 data:
   dir: "data/raw/SkinDisease"
@@ -21,7 +22,16 @@ data:
 loss_function:
   _target_: torch.nn.CrossEntropyLoss
 
+scheduler:
+  patience: 1
+  factor: 0.5
+
 optimizer:
-  _target_: torch.optim.Adam
-  _partial_: true
-  lr: 0.0003
+  adamw:
+    _target_: torch.optim.AdamW
+    _partial_: true
+    lr: 0.001
+  adam:
+    _target_: torch.optim.AdamW
+    _partial_: true
+    lr: 0.001
