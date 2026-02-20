@@ -4,6 +4,7 @@ import os.path
 import hydra
 from omegaconf import DictConfig
 import torch.nn
+from torch.optim.lr_scheduler import ReduceLROnPlateau
 import torchvision.models
 
 from skin_disease_recognition.config import PROJECT_ROOT
@@ -28,7 +29,7 @@ def train(cfg: DictConfig):
     logger.info('Instantiating objects')
     model: torch.nn.Module = hydra.utils.instantiate(cfg.model.estimator)
 
-    if cfg.model.pretrained:
+    if cfg.model.pretrained and cfg.freeze_layers:
         logger.info('Freezing parameters')
         for param in model.parameters():
             param.requires_grad = False
@@ -38,18 +39,46 @@ def train(cfg: DictConfig):
         model.fc = torch.nn.Linear(
             in_features=model.fc.in_features, out_features=cfg.data.num_classes
         )
+        backbone_params = [
+            param for name, param in model.named_parameters() if 'fc' not in name
+        ]
+        head_params = model.fc.parameters()
+
+        optim_partial = hydra.utils.instantiate(cfg.optimizer.adam)
+        base_lr = cfg.optimizer.adam.lr
     elif cfg.model.model_type == 'efficientnet':
         model: torchvision.models.EfficientNet
         model.classifier[1] = torch.nn.Linear(
             in_features=model.classifier[1].in_features,
             out_features=cfg.data.num_classes,
         )
+        backbone_params = [
+            param
+            for name, param in model.named_parameters()
+            if 'classifier' not in name
+        ]
+        head_params = model.classifier.parameters()
+
+        optim_partial = hydra.utils.instantiate(cfg.optimizer.adamw)
+        base_lr = cfg.optimizer.adamw.lr
+    else:
+        raise ValueError('Model type unknown')
 
     model = model.to(device=cfg.device)
 
     loss_fn = hydra.utils.instantiate(cfg.loss_function)
-    optim_partial = hydra.utils.instantiate(cfg.optimizer)
-    optim = optim_partial(model.parameters())
+    optim = optim_partial(
+        [
+            {'params': backbone_params, 'lr': base_lr * 0.1},
+            {'params': head_params},
+        ]
+    )
+    scheduler = ReduceLROnPlateau(
+        optimizer=optim,
+        mode='min',
+        patience=cfg.scheduler.patience,
+        factor=cfg.scheduler.factor,
+    )
 
     logger.info('Creating trainer')
     trainer = Trainer(
@@ -60,6 +89,7 @@ def train(cfg: DictConfig):
         loss_fn=loss_fn,
         device=cfg.device,
         num_classes=cfg.data.num_classes,
+        scheduler=scheduler,
     )
     logger.info('Starting training')
     trainer.train(
