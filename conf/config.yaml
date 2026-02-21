@@ -23,7 +23,7 @@ loss_function:
   _target_: torch.nn.CrossEntropyLoss
 
 scheduler:
-  patience: 1
+  patience: 2
   factor: 0.5
 
 optimizer:
@@ -31,7 +31,8 @@ optimizer:
     _target_: torch.optim.AdamW
     _partial_: true
     lr: 0.001
+    weight_decay: 0.1
   adam:
-    _target_: torch.optim.AdamW
+    _target_: torch.optim.Adam
     _partial_: true
     lr: 0.001
