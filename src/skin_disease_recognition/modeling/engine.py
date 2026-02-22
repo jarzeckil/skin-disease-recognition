@@ -2,17 +2,25 @@ import logging
 import os
 from typing import Any, cast
 
+from hydra.core.hydra_config import HydraConfig
 import mlflow
 import mlflow.pytorch
 import numpy as np
 from omegaconf import DictConfig, OmegaConf
+from sklearn.metrics import classification_report
 import torch
 from torch import Tensor, nn
+from torch.nn.functional import softmax
 from torch.optim import Optimizer
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 from torch.utils.data import DataLoader
 import torchmetrics
 from torchmetrics import Accuracy, F1Score, Precision, Recall
+
+from skin_disease_recognition.utils.plots import (
+    plot_bad_pred_distribution,
+    plot_confusion_matrix,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -106,6 +114,63 @@ class Trainer:
 
         return score
 
+    def final_evaluation(self):
+        y_preds = []
+        y_trues = []
+
+        miss_probs = []
+
+        low_miss = []
+        high_miss = []
+
+        self.model.eval()
+        with torch.no_grad():
+            for data in self.test_loader:
+                images: Tensor
+                labels: Tensor
+                images, labels = data
+
+                images = images.to(self.device)
+                labels = labels.to(self.device)
+
+                pred: Tensor = softmax(self.model(images), 1)
+                pred_label = torch.argmax(pred, dim=1)
+
+                for j, (p, lab) in enumerate(zip(pred_label, labels, strict=True)):
+                    if p != lab:
+                        miss_probs.append(pred[j][p].item())
+                    if p != lab and pred[j][p] > 0.99:
+                        entry = (images[j], p, lab, pred[j][p])
+                        high_miss.append(entry)
+                    if p != lab and pred[j][p] < 0.4:
+                        entry = (images[j], p, lab, pred[j][p])
+                        low_miss.append(entry)
+
+                y_preds.extend(pred_label.cpu())
+                y_trues.extend(labels.cpu())
+
+        classes = self.test_loader.dataset.classes
+
+        plot_path = os.path.join(
+            HydraConfig.get().runtime.output_dir, 'conf_matrix.png'
+        )
+        plot_confusion_matrix(plot_path, y_trues, y_preds, classes)
+        mlflow.log_artifact(plot_path)
+        logger.info('Confusion matrix plot logged to MLflow')
+
+        plot_path = os.path.join(
+            HydraConfig.get().runtime.output_dir, 'bad_classif_distribution.png'
+        )
+        plot_bad_pred_distribution(plot_path, miss_probs)
+        mlflow.log_artifact(plot_path)
+        logger.info('Bad classification prediction values plot logged to MLflow')
+
+        classif_report = classification_report(
+            y_true=y_trues, y_pred=y_preds, target_names=classes
+        )
+        mlflow.log_text(classif_report, 'classification_report.txt')
+        logger.info('Classification report logged to MLflow')
+
     def train(
         self, max_epochs: int, experiment_name: str, run_name: str, cfg: DictConfig
     ):
@@ -150,5 +215,6 @@ class Trainer:
                 )
                 if os.path.exists(best_model_path):
                     os.remove(best_model_path)
+                self.final_evaluation()
 
             logger.info(f'Run finished after {epoch + 1} epochs')
