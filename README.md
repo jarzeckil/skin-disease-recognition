@@ -55,4 +55,6 @@ A short description of the project.
 - learning rate with pretrained weights
 - inbalanced classes
 - metrics for multiclass
-
+- regularization - label smoothing
+- vram management - virtual batches
+- mlflow for everything - logging different artifacts
