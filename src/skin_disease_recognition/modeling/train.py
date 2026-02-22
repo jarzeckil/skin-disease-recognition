@@ -7,7 +7,7 @@ import torch.nn
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 import torchvision.models
 
-from skin_disease_recognition.config import PROJECT_ROOT
+from skin_disease_recognition.core.config import PROJECT_ROOT
 from skin_disease_recognition.data.loaders import make_loaders
 from skin_disease_recognition.modeling.engine import Trainer
 from skin_disease_recognition.utils.seeding import seed_everything
@@ -90,6 +90,7 @@ def train(cfg: DictConfig):
         device=cfg.device,
         num_classes=cfg.data.num_classes,
         scheduler=scheduler,
+        accumulation_steps=cfg.data.accumulation_steps,
     )
     logger.info('Starting training')
     trainer.train(
