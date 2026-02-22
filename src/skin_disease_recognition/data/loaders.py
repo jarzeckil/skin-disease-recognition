@@ -18,7 +18,7 @@ def seed_worker(worker_id):
 
 
 def get_transforms(cfg: DictConfig, stage='train'):
-    image_size = cfg.data.image_size
+    image_size = cfg.model.image_size
     if stage == 'train':
         return A.Compose(
             [
@@ -29,6 +29,7 @@ def get_transforms(cfg: DictConfig, stage='train'):
                 A.ColorJitter(
                     brightness=0.2, contrast=0.2, saturation=0.2, hue=0.05, p=0.3
                 ),
+                A.Affine(scale=(0.9, 1.1), translate_percent=0.1, p=0.5),
                 A.Normalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225)),
                 ToTensorV2(),
             ]
