@@ -21,6 +21,7 @@ data:
 
 loss_function:
   _target_: torch.nn.CrossEntropyLoss
+  label_smoothing: 0.1
 
 scheduler:
   patience: 2
