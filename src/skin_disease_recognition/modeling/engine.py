@@ -20,6 +20,7 @@ from torchmetrics import Accuracy, F1Score, Precision, Recall
 from skin_disease_recognition.utils.plots import (
     plot_bad_pred_distribution,
     plot_confusion_matrix,
+    plot_misclassified_images,
 )
 
 logger = logging.getLogger(__name__)
@@ -35,7 +36,8 @@ class Trainer:
         scheduler: ReduceLROnPlateau,
         loss_fn: nn.Module,
         device: str,
-        num_classes,
+        num_classes: int,
+        accumulation_steps: int,
     ):
         self.model = model
         self.train_loader = train_loader
@@ -44,6 +46,7 @@ class Trainer:
         self.loss_fn = loss_fn
         self.device = device
         self.scheduler = scheduler
+        self.accumulation_steps = accumulation_steps
 
         self.metrics = torchmetrics.MetricCollection(
             {
@@ -64,26 +67,34 @@ class Trainer:
         self.model.train()
         losses = []
         n = len(self.train_loader)
+
+        self.optimizer.zero_grad()
         for i, data in enumerate(self.train_loader):
             images: Tensor
             labels: Tensor
             images, labels = data
-
             images = images.to(device=self.device)
             labels = labels.to(device=self.device)
-
-            self.optimizer.zero_grad()
 
             pred = self.model(images)
 
             loss = self.loss_fn(pred, labels)
             losses.append(loss.item())
+            loss = loss / self.accumulation_steps
+
             loss.backward()
 
-            self.optimizer.step()
+            if (i + 1) % self.accumulation_steps == 0:
+                self.optimizer.step()
+                self.optimizer.zero_grad()
 
             if i % 100 == 0:
                 logger.info(f'Epoch {epoch_index}, Batch {i}/{n}')
+
+        if len(self.train_loader) % self.accumulation_steps != 0:
+            self.optimizer.step()
+            self.optimizer.zero_grad()
+
         avg_loss = np.mean(losses)
         return avg_loss
 
@@ -139,7 +150,7 @@ class Trainer:
                 for j, (p, lab) in enumerate(zip(pred_label, labels, strict=True)):
                     if p != lab:
                         miss_probs.append(pred[j][p].item())
-                    if p != lab and pred[j][p] > 0.99:
+                    if p != lab and pred[j][p] > 0.85:
                         entry = (images[j], p, lab, pred[j][p])
                         high_miss.append(entry)
                     if p != lab and pred[j][p] < 0.4:
@@ -164,6 +175,38 @@ class Trainer:
         plot_bad_pred_distribution(plot_path, miss_probs)
         mlflow.log_artifact(plot_path)
         logger.info('Bad classification prediction values plot logged to MLflow')
+
+        high_miss.sort(key=lambda x: x[3], reverse=True)
+        top_high_miss = high_miss[:9]
+
+        if top_high_miss:
+            plot_path = os.path.join(
+                HydraConfig.get().runtime.output_dir, 'high_confidence_misses.png'
+            )
+            plot_misclassified_images(
+                plot_path,
+                top_high_miss,
+                classes,
+                'Top High Confidence Misclassifications',
+            )
+            mlflow.log_artifact(plot_path)
+            logger.info('High confidence misses plot logged to MLflow')
+
+        low_miss.sort(key=lambda x: x[3])
+        top_low_miss = low_miss[:9]
+
+        if top_low_miss:
+            plot_path = os.path.join(
+                HydraConfig.get().runtime.output_dir, 'low_confidence_misses.png'
+            )
+            plot_misclassified_images(
+                plot_path,
+                top_low_miss,
+                classes,
+                'Top Low Confidence Misclassifications',
+            )
+            mlflow.log_artifact(plot_path)
+            logger.info('Low confidence misses plot logged to MLflow')
 
         classif_report = classification_report(
             y_true=y_trues, y_pred=y_preds, target_names=classes

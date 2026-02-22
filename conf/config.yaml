@@ -13,9 +13,9 @@ data:
   train_path: "data/raw/SkinDisease/train"
   test_path: "data/raw/SkinDisease/test"
 
-  batch_size: 32
+  batch_size: 8
+  accumulation_steps: 4
   num_workers: 4
-  image_size: 224
 
   num_classes: 22
 
