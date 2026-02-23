@@ -2,9 +2,9 @@ import ast
 import json
 import os
 
-import torch
 import mlflow
 from mlflow.tracking import MlflowClient
+import torch
 
 from skin_disease_recognition.core.config import MODEL_DIR
 
@@ -28,7 +28,9 @@ print(
 model = mlflow.pyfunc.load_model(
     f'models:/{MODEL_NAME}/{latest_version_info.version}'
 ).get_raw_model()
-model_data = ast.literal_eval(client.get_run(run_id).data.to_dictionary()['params']['model'])
+model_data = ast.literal_eval(
+    client.get_run(run_id).data.to_dictionary()['params']['model']
+)
 metrics = client.get_run(run_id).data.to_dictionary()['metrics']
 
 model_name = model_data['model_name']
@@ -36,7 +38,7 @@ model_name = model_data['model_name']
 os.mkdir(DEST_DIR / model_name)
 
 torch.save(model, DEST_DIR / model_name / 'model.pth')
-print(f'Model saved to {DEST_DIR / model_name / 'model.pth'}')
+print(f'Model saved to {DEST_DIR / model_name / "model.pth"}')
 
 with open(DEST_DIR / model_name / 'model_data.json', 'w') as f:
     json.dump(model_data, f)
