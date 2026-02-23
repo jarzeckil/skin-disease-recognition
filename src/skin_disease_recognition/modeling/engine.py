@@ -1,10 +1,29 @@
+import logging
+import os
+from typing import Any, cast
+
+from hydra.core.hydra_config import HydraConfig
+import mlflow
+import mlflow.pytorch
 import numpy as np
+from omegaconf import DictConfig, OmegaConf
+from sklearn.metrics import classification_report
 import torch
 from torch import Tensor, nn
+from torch.nn.functional import softmax
 from torch.optim import Optimizer
+from torch.optim.lr_scheduler import ReduceLROnPlateau
 from torch.utils.data import DataLoader
 import torchmetrics
 from torchmetrics import Accuracy, F1Score, Precision, Recall
+
+from skin_disease_recognition.utils.plots import (
+    plot_bad_pred_distribution,
+    plot_confusion_matrix,
+    plot_misclassified_images,
+)
+
+logger = logging.getLogger(__name__)
 
 
 class Trainer:
@@ -14,9 +33,11 @@ class Trainer:
         train_loader: DataLoader,
         test_loader: DataLoader,
         optimizer: Optimizer,
+        scheduler: ReduceLROnPlateau,
         loss_fn: nn.Module,
         device: str,
-        num_classes,
+        num_classes: int,
+        accumulation_steps: int,
     ):
         self.model = model
         self.train_loader = train_loader
@@ -24,46 +45,64 @@ class Trainer:
         self.optimizer = optimizer
         self.loss_fn = loss_fn
         self.device = device
+        self.scheduler = scheduler
+        self.accumulation_steps = accumulation_steps
 
         self.metrics = torchmetrics.MetricCollection(
-            [
-                Accuracy(task='multiclass', num_classes=num_classes),
-                Precision(task='multiclass', num_classes=num_classes, average='macro'),
-                Recall(task='multiclass', num_classes=num_classes, average='macro'),
-                F1Score(task='multiclass', num_classes=num_classes, average='macro'),
-            ]
+            {
+                'accuracy': Accuracy(task='multiclass', num_classes=num_classes),
+                'precision': Precision(
+                    task='multiclass', num_classes=num_classes, average='macro'
+                ),
+                'recall': Recall(
+                    task='multiclass', num_classes=num_classes, average='macro'
+                ),
+                'f1': F1Score(
+                    task='multiclass', num_classes=num_classes, average='macro'
+                ),
+            }
         ).to(device=self.device)
 
     def train_one_epoch(self, epoch_index):
         self.model.train()
         losses = []
         n = len(self.train_loader)
+
+        self.optimizer.zero_grad()
         for i, data in enumerate(self.train_loader):
             images: Tensor
             labels: Tensor
             images, labels = data
-
             images = images.to(device=self.device)
             labels = labels.to(device=self.device)
 
-            self.optimizer.zero_grad()
+            pred = self.model(images)
 
-            outputs = self.model(images)
-
-            loss = self.loss_fn(outputs, labels)
+            loss = self.loss_fn(pred, labels)
             losses.append(loss.item())
+            loss = loss / self.accumulation_steps
+
             loss.backward()
 
-            self.optimizer.step()
+            if (i + 1) % self.accumulation_steps == 0:
+                self.optimizer.step()
+                self.optimizer.zero_grad()
 
             if i % 100 == 0:
-                print(f'Epoch {epoch_index}, Batch {i}/{n}')
+                logger.info(f'Epoch {epoch_index}, Batch {i}/{n}')
+
+        if len(self.train_loader) % self.accumulation_steps != 0:
+            self.optimizer.step()
+            self.optimizer.zero_grad()
+
         avg_loss = np.mean(losses)
-        print(f'Epoch {epoch_index} finished with average loss {avg_loss}')
         return avg_loss
 
     def evaluate(self):
         self.model.eval()
+        self.metrics.reset()
+
+        losses = []
 
         with torch.no_grad():
             for data in self.test_loader:
@@ -76,6 +115,149 @@ class Trainer:
 
                 pred = self.model(images)
 
+                loss = self.loss_fn(pred, labels)
+                losses.append(loss.item())
+
                 self.metrics.update(pred, labels)
 
-        return self.metrics.compute()
+        score = {k: v.item() for k, v in self.metrics.compute().items()}
+        score['validation_loss'] = np.mean(losses)
+
+        return score
+
+    def final_evaluation(self):
+        y_preds = []
+        y_trues = []
+
+        miss_probs = []
+
+        low_miss = []
+        high_miss = []
+
+        self.model.eval()
+        with torch.no_grad():
+            for data in self.test_loader:
+                images: Tensor
+                labels: Tensor
+                images, labels = data
+
+                images = images.to(self.device)
+                labels = labels.to(self.device)
+
+                pred: Tensor = softmax(self.model(images), 1)
+                pred_label = torch.argmax(pred, dim=1)
+
+                for j, (p, lab) in enumerate(zip(pred_label, labels, strict=True)):
+                    if p != lab:
+                        miss_probs.append(pred[j][p].item())
+                    if p != lab and pred[j][p] > 0.85:
+                        entry = (images[j], p, lab, pred[j][p])
+                        high_miss.append(entry)
+                    if p != lab and pred[j][p] < 0.4:
+                        entry = (images[j], p, lab, pred[j][p])
+                        low_miss.append(entry)
+
+                y_preds.extend(pred_label.cpu())
+                y_trues.extend(labels.cpu())
+
+        classes = self.test_loader.dataset.classes
+
+        plot_path = os.path.join(
+            HydraConfig.get().runtime.output_dir, 'conf_matrix.png'
+        )
+        plot_confusion_matrix(plot_path, y_trues, y_preds, classes)
+        mlflow.log_artifact(plot_path)
+        logger.info('Confusion matrix plot logged to MLflow')
+
+        plot_path = os.path.join(
+            HydraConfig.get().runtime.output_dir, 'bad_classif_distribution.png'
+        )
+        plot_bad_pred_distribution(plot_path, miss_probs)
+        mlflow.log_artifact(plot_path)
+        logger.info('Bad classification prediction values plot logged to MLflow')
+
+        high_miss.sort(key=lambda x: x[3], reverse=True)
+        top_high_miss = high_miss[:9]
+
+        if top_high_miss:
+            plot_path = os.path.join(
+                HydraConfig.get().runtime.output_dir, 'high_confidence_misses.png'
+            )
+            plot_misclassified_images(
+                plot_path,
+                top_high_miss,
+                classes,
+                'Top High Confidence Misclassifications',
+            )
+            mlflow.log_artifact(plot_path)
+            logger.info('High confidence misses plot logged to MLflow')
+
+        low_miss.sort(key=lambda x: x[3])
+        top_low_miss = low_miss[:9]
+
+        if top_low_miss:
+            plot_path = os.path.join(
+                HydraConfig.get().runtime.output_dir, 'low_confidence_misses.png'
+            )
+            plot_misclassified_images(
+                plot_path,
+                top_low_miss,
+                classes,
+                'Top Low Confidence Misclassifications',
+            )
+            mlflow.log_artifact(plot_path)
+            logger.info('Low confidence misses plot logged to MLflow')
+
+        classif_report = classification_report(
+            y_true=y_trues, y_pred=y_preds, target_names=classes
+        )
+        mlflow.log_text(classif_report, 'classification_report.txt')
+        logger.info('Classification report logged to MLflow')
+
+    def train(
+        self, max_epochs: int, experiment_name: str, run_name: str, cfg: DictConfig
+    ):
+        mlflow.set_experiment(experiment_name)
+
+        with mlflow.start_run(run_name=run_name):
+            mlflow.log_params(cast(dict[str, Any], OmegaConf.to_object(cfg)))
+
+            best_f1 = 0.0
+            best_step = 0
+            best_model_path = 'best_model_state.pth'
+
+            for epoch in range(max_epochs):
+                logger.info(f'Epoch {epoch}')
+                loss = self.train_one_epoch(epoch_index=epoch)
+                logger.info(f'Epoch {epoch} finished. Training loss: {loss}')
+
+                scores = self.evaluate()
+                logger.info(f'Metrics for epoch {epoch}: {scores}')
+                curr_f1 = scores['f1']
+                curr_val_loss = scores['validation_loss']
+
+                backbone_lr = self.optimizer.param_groups[0]['lr']
+                head_lr = self.optimizer.param_groups[1]['lr']
+                self.scheduler.step(curr_val_loss)
+
+                if best_f1 < curr_f1:
+                    logger.info(f'New model with better F1 found: f1 = {curr_f1}')
+                    best_f1 = curr_f1
+                    best_step = epoch
+                    torch.save(self.model.state_dict(), best_model_path)
+                scores['training_loss'] = loss
+                scores['backbone_lr'] = backbone_lr
+                scores['head_lr'] = head_lr
+                mlflow.log_metrics(metrics=scores, step=epoch)
+
+            if best_f1 > 0.0:
+                logger.info('Loading best model and logging to MLflow')
+                self.model.load_state_dict(torch.load(best_model_path))
+                mlflow.pytorch.log_model(
+                    pytorch_model=self.model, name='model', step=best_step
+                )
+                if os.path.exists(best_model_path):
+                    os.remove(best_model_path)
+                self.final_evaluation()
+
+            logger.info(f'Run finished after {epoch + 1} epochs')

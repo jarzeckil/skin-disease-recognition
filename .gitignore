@@ -193,3 +193,10 @@ cython_debug/
 
 # hydra outputs
 outputs
+
+# mlflow
+mlruns
+mlflow.db
+
+models/*
+!models/.gitkeep

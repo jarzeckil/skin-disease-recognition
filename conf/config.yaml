@@ -1,11 +1,39 @@
 defaults:
   - _self_
+  - model: resnet18_pretrained
+
+experiment_name: 'SkinDisease'
+device: 'cuda'
+seed: 42
+max_epochs: 30
+freeze_layers: false
 
 data:
   dir: "data/raw/SkinDisease"
   train_path: "data/raw/SkinDisease/train"
   test_path: "data/raw/SkinDisease/test"
 
-  batch_size: 32
+  batch_size: 16
+  accumulation_steps: 2
   num_workers: 4
-  image_size: 224
+
+  num_classes: 22
+
+loss_function:
+  _target_: torch.nn.CrossEntropyLoss
+  label_smoothing: 0.2
+
+scheduler:
+  patience: 2
+  factor: 0.5
+
+optimizer:
+  adamw:
+    _target_: torch.optim.AdamW
+    _partial_: true
+    lr: 0.001
+    weight_decay: 0.1
+  adam:
+    _target_: torch.optim.Adam
+    _partial_: true
+    lr: 0.001

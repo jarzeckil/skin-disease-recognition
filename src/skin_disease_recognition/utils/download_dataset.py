@@ -1,6 +1,6 @@
 import kagglehub
 
-from skin_disease_recognition.config import RAW_DATA_DIR
+from skin_disease_recognition.core.config import RAW_DATA_DIR
 
 path = kagglehub.dataset_download('pacificrm/skindiseasedataset')
 
