@@ -17,6 +17,7 @@ classifiers = [
 ]
 dependencies = [
     "albumentations>=2.0.8",
+    "fastapi>=0.128.7",
     "hydra-core>=1.3.2",
     "ipykernel>=7.1.0",
     "kagglehub>=0.4.2",
@@ -27,10 +28,12 @@ dependencies = [
     "protobuf~=6.0",
     "pytest",
     "python-dotenv",
+    "python-multipart>=0.0.22",
     "ruff",
     "scikit-learn>=1.8.0",
     "seaborn>=0.13.2",
     "torchmetrics>=1.8.2",
+    "uvicorn>=0.40.0",
 ]
 requires-python = "~=3.13.0"
 
