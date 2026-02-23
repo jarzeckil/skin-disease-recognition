@@ -46,6 +46,11 @@ format:
 mlflow:
 	uv run mlflow ui
 
+## Export model from mlflow
+.PHONY: model
+model:
+	uv run src/skin_disease_recognition/serving/download_model.py
+
 ## Run tests
 .PHONY: test
 test:
