@@ -5,7 +5,7 @@ defaults:
 experiment_name: 'SkinDisease'
 device: 'cuda'
 seed: 42
-max_epochs: 20
+max_epochs: 30
 freeze_layers: false
 
 data:
@@ -13,15 +13,15 @@ data:
   train_path: "data/raw/SkinDisease/train"
   test_path: "data/raw/SkinDisease/test"
 
-  batch_size: 8
-  accumulation_steps: 4
+  batch_size: 16
+  accumulation_steps: 2
   num_workers: 4
 
   num_classes: 22
 
 loss_function:
   _target_: torch.nn.CrossEntropyLoss
-  label_smoothing: 0.1
+  label_smoothing: 0.2
 
 scheduler:
   patience: 2
