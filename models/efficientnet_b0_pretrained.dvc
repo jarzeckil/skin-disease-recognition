@@ -1,0 +1,6 @@
+outs:
+- md5: 0509d365b9571d989bef9fae7ae4a8aa.dir
+  size: 16476743
+  nfiles: 3
+  hash: md5
+  path: efficientnet_b0_pretrained
