@@ -222,6 +222,10 @@ class Trainer:
         with mlflow.start_run(run_name=run_name):
             mlflow.log_params(cast(dict[str, Any], OmegaConf.to_object(cfg)))
 
+            class_names = self.test_loader.dataset.classes
+            class_names = ' '.join(class_names)
+            mlflow.log_text(class_names, 'class_names.txt')
+
             best_f1 = 0.0
             best_step = 0
             best_model_path = 'best_model_state.pth'

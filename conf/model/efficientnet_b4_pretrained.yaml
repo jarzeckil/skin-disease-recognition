@@ -1,8 +1,0 @@
-model_name: 'efficientnet_b4_pretrained'
-model_type: 'efficientnet'
-pretrained: true
-image_size: 380
-
-estimator:
-  _target_: torchvision.models.efficientnet_b4
-  weights: 'DEFAULT'

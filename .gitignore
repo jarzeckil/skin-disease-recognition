@@ -200,3 +200,4 @@ mlflow.db
 
 models/*
 !models/.gitkeep
+!models/**/*.dvc

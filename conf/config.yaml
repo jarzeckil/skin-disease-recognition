@@ -1,6 +1,6 @@
 defaults:
   - _self_
-  - model: resnet18_pretrained
+  - model: efficientnet_b0_pretrained
 
 experiment_name: 'SkinDisease'
 device: 'cuda'

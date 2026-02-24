@@ -1,7 +1,7 @@
-model_name: 'resnet-18'
+model_name: 'RESNET-18'
 model_type: 'resnet'
-pretrained: false
+pretrained: true
 
 estimator:
   _target_: torchvision.models.resnet18
-  weights: null
+  weights: 'DEFAULT'
