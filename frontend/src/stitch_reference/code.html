@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#2b7cee",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101822",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope"]
+                    },
+                    borderRadius: {"DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<title>DermAI Assist Dashboard</title>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen">
+<div class="layout-container flex flex-col min-h-screen">
+<header class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 px-6 md:px-10 py-4 bg-background-light dark:bg-background-dark sticky top-0 z-50">
+<div class="flex items-center gap-3">
+<div class="bg-primary p-2 rounded-lg flex items-center justify-center text-white">
+<span class="material-symbols-outlined">health_and_safety</span>
+</div>
+<h2 class="text-xl font-bold tracking-tight">DermAI Assist</h2>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors">
+<span class="material-symbols-outlined">light_mode</span>
+</button>
+<div class="h-10 w-10 rounded-full border-2 border-primary overflow-hidden">
+<img alt="Doctor profile picture" class="object-cover w-full h-full" data-alt="Professional portrait of a dermatologist" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCcowHCeHiCU9tFYt37wOsZ2Vrl4tajEy1SGIpu9OcCr-ZahWGSNZDaAY6WyKAhzpcehwPcNxsMG-YwO3C4-aEtyWupTnJKgLHwH7FIEx5E3X_MoUW3n69LdZ6n8Kiy6xEERpHQYa2QFNG1vYbPS5HxjUj2Bco7vMsaTnosrConEy4M8HHlLOXQVsRrUZP4AmdjDbS-UInDVpX27VuB-wn6GWBmtCd1cKHiNdbOvsxt32ILHtDa-paNvg8d7aaJWWM8iMv2ahdmg4HC"/>
+</div>
+</div>
+</header>
+<main class="flex-1 max-w-7xl mx-auto w-full p-6 md:p-10 space-y-8">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+<div>
+<h1 class="text-3xl md:text-4xl font-black tracking-tight">Skin Lesion Analysis</h1>
+<p class="text-slate-500 dark:text-slate-400 mt-2">AI-powered dermatological diagnostic support</p>
+</div>
+<div class="flex gap-3">
+<button class="flex items-center gap-2 px-6 py-2.5 rounded-full border border-slate-200 dark:border-slate-700 font-semibold text-sm hover:bg-slate-100 dark:hover:bg-slate-800 transition-all">
+<span class="material-symbols-outlined text-sm">ios_share</span>
+                    Export Report
+                </button>
+<button class="flex items-center gap-2 px-6 py-2.5 rounded-full bg-primary text-white font-semibold text-sm hover:bg-primary/90 shadow-lg shadow-primary/20 transition-all">
+<span class="material-symbols-outlined text-sm">verified</span>
+                    Verify Diagnosis
+                </button>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+<div class="lg:col-span-7 flex flex-col h-full">
+<div class="group relative flex flex-col items-center justify-center gap-8 rounded-xl border-2 border-dashed border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 px-6 py-12 flex-1 min-h-[650px] hover:border-primary/50 dark:hover:border-primary/50 transition-all cursor-pointer h-full">
+<div class="w-40 h-40 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-4 group-hover:scale-110 transition-transform duration-300">
+<span class="material-symbols-outlined text-7xl">cloud_upload</span>
+</div>
+<div class="text-center space-y-3">
+<p class="text-4xl font-bold">Upload Skin Image</p>
+<p class="text-slate-500 dark:text-slate-400 text-lg max-w-md mx-auto">Drag and drop or click to upload a high-resolution image of the lesion for immediate analysis.</p>
+<p class="text-slate-400 dark:text-slate-500 text-sm mt-4">Supported formats: JPEG, PNG, WEBP (Max 20MB)</p>
+</div>
+<button class="px-12 py-4 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 rounded-full font-bold text-lg mt-8 hover:shadow-lg transition-shadow">
+                        Select File
+                    </button>
+</div>
+</div>
+<div class="lg:col-span-5 space-y-6">
+<div class="bg-primary/10 dark:bg-primary/5 border border-primary/20 rounded-xl p-6 flex flex-col md:flex-row gap-6 items-center">
+<div class="flex-1 md:text-left">
+<p class="text-primary text-xs font-bold uppercase tracking-widest mb-1">Primary Prediction</p>
+<h3 class="text-2xl font-black mb-1">Melanoma</h3>
+<div class="flex items-center md:justify-start gap-2">
+<span class="text-3xl font-bold text-primary">94.2%</span>
+<span class="text-slate-500 text-sm font-medium">Confidence</span>
+</div>
+</div>
+</div>
+<div class="bg-white dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800 rounded-xl p-6 shadow-sm">
+<div class="flex justify-between items-center mb-6">
+<h4 class="font-bold text-lg">Differential Diagnosis</h4>
+<span class="text-xs bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded-md text-slate-500 dark:text-slate-400">Top 5 Probabilities</span>
+</div>
+<div class="space-y-5">
+<div class="space-y-1.5">
+<div class="flex justify-between text-sm">
+<span class="font-semibold">Melanoma</span>
+<span class="text-primary font-bold">94.2%</span>
+</div>
+<div class="w-full h-2.5 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full" style="width: 94.2%"></div>
+</div>
+</div>
+<div class="space-y-1.5">
+<div class="flex justify-between text-sm">
+<span class="font-semibold text-slate-600 dark:text-slate-400">Basal Cell Carcinoma</span>
+<span class="text-slate-600 dark:text-slate-400 font-bold">3.1%</span>
+</div>
+<div class="w-full h-2 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
+<div class="h-full bg-slate-400 dark:bg-slate-500 rounded-full" style="width: 3.1%"></div>
+</div>
+</div>
+<div class="space-y-1.5">
+<div class="flex justify-between text-sm">
+<span class="font-semibold text-slate-600 dark:text-slate-400">Seborrheic Keratosis</span>
+<span class="text-slate-600 dark:text-slate-400 font-bold">1.4%</span>
+</div>
+<div class="w-full h-2 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
+<div class="h-full bg-slate-400 dark:bg-slate-500 rounded-full" style="width: 1.4%"></div>
+</div>
+</div>
+<div class="space-y-1.5">
+<div class="flex justify-between text-sm">
+<span class="font-semibold text-slate-600 dark:text-slate-400">Nevus</span>
+<span class="text-slate-600 dark:text-slate-400 font-bold">0.8%</span>
+</div>
+<div class="w-full h-2 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
+<div class="h-full bg-slate-400 dark:bg-slate-500 rounded-full" style="width: 0.8%"></div>
+</div>
+</div>
+<div class="space-y-1.5">
+<div class="flex justify-between text-sm">
+<span class="font-semibold text-slate-600 dark:text-slate-400">Actinic Keratosis</span>
+<span class="text-slate-600 dark:text-slate-400 font-bold">0.5%</span>
+</div>
+<div class="w-full h-2 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
+<div class="h-full bg-slate-400 dark:bg-slate-500 rounded-full" style="width: 0.5%"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<footer class="mt-auto border-t border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 py-8">
+<div class="max-w-7xl mx-auto px-6 md:px-10">
+<div class="flex flex-col gap-6">
+<div class="flex flex-wrap items-center justify-between gap-6">
+<div class="flex gap-8">
+<div class="flex flex-col">
+<span class="text-[10px] uppercase tracking-wider text-slate-500 font-bold">F1 Score</span>
+<span class="text-sm font-semibold">0.92</span>
+</div>
+<div class="flex flex-col">
+<span class="text-[10px] uppercase tracking-wider text-slate-500 font-bold">Accuracy</span>
+<span class="text-sm font-semibold">95.4%</span>
+</div>
+<div class="flex flex-col">
+<span class="text-[10px] uppercase tracking-wider text-slate-500 font-bold">Recall</span>
+<span class="text-sm font-semibold">0.91</span>
+</div>
+<div class="flex flex-col">
+<span class="text-[10px] uppercase tracking-wider text-slate-500 font-bold">Precision</span>
+<span class="text-sm font-semibold">0.93</span>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="text-xs text-slate-500 flex items-center gap-2">
+<span class="inline-block w-2 h-2 rounded-full bg-green-500"></span>
+                            Model Version: v4.2.1-stable
+                        </div>
+<a class="flex items-center gap-2 text-xs font-medium text-slate-500 hover:text-primary dark:text-slate-400 dark:hover:text-primary transition-colors" href="#">
+<svg class="w-4 h-4 fill-current" role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>GitHub</title><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"></path></svg>
+                            Source on GitHub
+                        </a>
+</div>
+</div>
+<div class="border-t border-slate-200 dark:border-slate-800 pt-4">
+<p class="text-[11px] text-slate-500 dark:text-slate-400 text-center leading-relaxed max-w-2xl mx-auto">
+<span class="font-bold text-primary/80 dark:text-primary/60">Disclaimer:</span> This tool is for research and educational purposes only and does not constitute medical advice. Consult a healthcare professional for diagnosis.
+                    </p>
+</div>
+</div>
+</div>
+</footer>
+</div>
+</body></html>

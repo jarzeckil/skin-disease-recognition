@@ -1,0 +1,40 @@
+/* Manrope font from Google Fonts - must be before @import "tailwindcss" */
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap');
+
+@import "tailwindcss";
+
+@theme {
+  /* Color palette from Stitch reference */
+  --color-primary: #2b7cee;
+  --color-primary-light: oklch(from #2b7cee l c h / 10%);
+  --color-primary-hover: oklch(from #2b7cee calc(l - 0.05) c h);
+  
+  --color-background-light: #f6f7f8;
+  --color-background-dark: #101822;
+  
+  --color-surface-light: #ffffff;
+  --color-surface-dark: oklch(from #101822 calc(l + 0.05) c h);
+  
+  --color-border-light: #e2e8f0;
+  --color-border-dark: #1e293b;
+  
+  /* Font family */
+  --font-family-display: "Manrope", system-ui, sans-serif;
+  
+  /* Border radius */
+  --radius-default: 1rem;
+  --radius-lg: 2rem;
+  --radius-xl: 3rem;
+}
+
+/* Base styles */
+body {
+  font-family: var(--font-family-display);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Dark mode is default for this app */
+:root {
+  color-scheme: dark;
+}
