@@ -17,6 +17,7 @@ classifiers = [
 ]
 dependencies = [
     "albumentations>=2.0.8",
+    "dvc>=3.66.1",
     "fastapi>=0.128.7",
     "hydra-core>=1.3.2",
     "ipykernel>=7.1.0",
