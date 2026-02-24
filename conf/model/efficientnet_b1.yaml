@@ -1,4 +1,4 @@
-model_name: 'efficientnet_b1_pretrained'
+model_name: 'EFFICIENTNET-B1'
 model_type: 'efficientnet'
 pretrained: true
 image_size: 240
