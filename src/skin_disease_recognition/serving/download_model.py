@@ -45,4 +45,6 @@ with open(DEST_DIR / model_name / 'model_data.json', 'w') as f:
 with open(DEST_DIR / model_name / 'metrics.json', 'w') as f:
     json.dump(metrics, f)
 
+# TODO download class names from mlflow
+
 print('Export complete.')
