@@ -64,14 +64,17 @@ create_environment:
 	@echo ">>> New uv virtual environment created. Activate with:"
 	@echo ">>> Windows: .\\\\.venv\\\\Scripts\\\\activate"
 	@echo ">>> Unix/macOS: source ./.venv/bin/activate"
+
+## Push changes with dvc
+.PHONY: dvc
+dvc:
+	uv run dvc push -r origin
+
+## Run app
+.PHONY: server
+server:
+	uv run uvicorn src.skin_disease_recognition.serving.app:app --reload
 	
-
-
-
-#################################################################################
-# PROJECT RULES                                                                 #
-#################################################################################
-
 
 
 #################################################################################
