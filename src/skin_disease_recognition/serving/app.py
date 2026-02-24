@@ -110,9 +110,6 @@ async def info():
         'precision': metr['precision'],
     }
 
-    response = {
-        'model_name': model_name,
-        'metrics': metr_response
-    }
+    response = {'model_name': model_name, 'metrics': metr_response}
 
     return response
