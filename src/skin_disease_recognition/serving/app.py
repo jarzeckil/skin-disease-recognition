@@ -103,12 +103,16 @@ async def info():
     metr = artifacts['metrics']
     model_name = artifacts['metadata']['model_name']
 
-    result = {
-        'model_name': model_name,
+    metr_response = {
         'f1': metr['f1'],
         'accuracy': metr['accuracy'],
         'recall': metr['recall'],
         'precision': metr['precision'],
     }
 
-    return {'metrics': result}
+    response = {
+        'model_name': model_name,
+        'metrics': metr_response
+    }
+
+    return response
