@@ -8,7 +8,7 @@ from torch.optim.lr_scheduler import ReduceLROnPlateau
 import torchvision.models
 
 from skin_disease_recognition.core.config import PROJECT_ROOT
-from skin_disease_recognition.data.loaders import make_loaders
+from skin_disease_recognition.data.factory import make_loaders
 from skin_disease_recognition.modeling.engine import Trainer
 from skin_disease_recognition.utils.seeding import seed_everything
 
