@@ -98,10 +98,13 @@ async def predict(file: UploadFile):
     return {'predictions': result}
 
 
-@app.get('/metrics', status_code=status.HTTP_200_OK)
-async def metrics():
+@app.get('/info', status_code=status.HTTP_200_OK)
+async def info():
     metr = artifacts['metrics']
+    model_name = artifacts['metadata']['model_name']
+
     result = {
+        'model_name': model_name,
         'f1': metr['f1'],
         'accuracy': metr['accuracy'],
         'recall': metr['recall'],
