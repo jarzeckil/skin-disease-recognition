@@ -1,0 +1,11 @@
+services:
+  api:
+    build: .
+    image: skin-disease:latest
+    container_name: skin-disease-api
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./models:/app/models:z
+    env_file:
+      - .env
