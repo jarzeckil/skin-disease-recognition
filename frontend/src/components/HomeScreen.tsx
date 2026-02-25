@@ -3,8 +3,9 @@
  * Based on dark_mode_refined_analysis_2 reference
  */
 
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { Upload, Camera } from 'lucide-react';
+import CameraCapture from './CameraCapture';
 
 interface HomeScreenProps {
   onFileSelect: (file: File) => void;
@@ -18,7 +19,7 @@ const HomeScreen: React.FC<HomeScreenProps> = ({
   onValidationError 
 }) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const cameraInputRef = useRef<HTMLInputElement>(null);
+  const [isCameraOpen, setIsCameraOpen] = useState(false);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -26,6 +27,8 @@ const HomeScreen: React.FC<HomeScreenProps> = ({
       onValidationError(null);
       onFileSelect(file);
     }
+    // Reset input value to allow selecting the same file again
+    e.target.value = '';
   };
 
   const handleUploadClick = () => {
@@ -33,7 +36,16 @@ const HomeScreen: React.FC<HomeScreenProps> = ({
   };
 
   const handleCameraClick = () => {
-    cameraInputRef.current?.click();
+    setIsCameraOpen(true);
+  };
+
+  const handleCameraClose = () => {
+    setIsCameraOpen(false);
+  };
+
+  const handleCameraCapture = (file: File) => {
+    onValidationError(null);
+    onFileSelect(file);
   };
 
   return (
@@ -48,19 +60,11 @@ const HomeScreen: React.FC<HomeScreenProps> = ({
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto w-full py-8 md:py-16 px-4">
-        {/* Hidden file inputs */}
+        {/* Hidden file input */}
         <input
           ref={fileInputRef}
           type="file"
           accept="image/jpeg,image/png,image/webp"
-          onChange={handleFileChange}
-          className="hidden"
-        />
-        <input
-          ref={cameraInputRef}
-          type="file"
-          accept="image/jpeg,image/png,image/webp"
-          capture="environment"
           onChange={handleFileChange}
           className="hidden"
         />
@@ -113,6 +117,13 @@ const HomeScreen: React.FC<HomeScreenProps> = ({
           </div>
         </div>
       </div>
+
+      {/* Camera Capture Modal */}
+      <CameraCapture
+        isOpen={isCameraOpen}
+        onClose={handleCameraClose}
+        onCapture={handleCameraCapture}
+      />
     </div>
   );
 };
