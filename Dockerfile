@@ -1,4 +1,4 @@
-FROM python:3.13-slim AS backend-builder
+FROM python:3.13-slim
 WORKDIR /app
 
 RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates
@@ -14,7 +14,6 @@ ENV PYTHONUNBUFFERED=1 \
 COPY pyproject.toml uv.lock ./
 RUN uv sync --frozen --no-install-project --group pytorch
 COPY src ./src
-COPY models ./models
 
 RUN useradd -m appuser && chown -R appuser /app
 USER appuser
