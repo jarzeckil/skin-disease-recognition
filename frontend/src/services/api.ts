@@ -15,7 +15,7 @@ export const predictSkinDisease = async (file: File): Promise<PredictionResponse
   const formData = new FormData();
   formData.append('file', file);
 
-  const response = await fetch('/predict', {
+  const response = await fetch('/api/predict', {
     method: 'POST',
     body: formData,
   });
@@ -33,7 +33,7 @@ export const predictSkinDisease = async (file: File): Promise<PredictionResponse
  * @returns Model name and performance metrics
  */
 export const getModelInfo = async (): Promise<ModelInfoResponse> => {
-  const response = await fetch('/info', {
+  const response = await fetch('/api/info', {
     method: 'GET',
   });
 

@@ -8,11 +8,11 @@ export default defineConfig({
   server: {
     port: 5173,
     proxy: {
-      '/predict': {
+      '/api/predict': {
         target: 'http://localhost:8000',
         changeOrigin: true,
       },
-      '/info': {
+      '/api/info': {
         target: 'http://localhost:8000',
         changeOrigin: true,
       },
