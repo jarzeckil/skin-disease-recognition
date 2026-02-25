@@ -15,8 +15,6 @@ services:
     container_name: skin-disease-nginx
     ports:
       - "80:80"
-    volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro,z
     networks:
       - public-network
       - private-network
