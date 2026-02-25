@@ -4,13 +4,14 @@
  */
 
 import { useState, useCallback, useEffect } from 'react';
-import { Share } from 'lucide-react';
+import { Download } from 'lucide-react';
 import Header from './components/Header';
 import HomeScreen from './components/HomeScreen';
 import AnalysisScreen from './components/AnalysisScreen';
 import MetricsDisplay from './components/MetricsDisplay';
 import { usePrediction, useModelInfo, useTheme } from './hooks';
 import { validateImageFile } from './utils/validation';
+import { exportReport } from './utils/exportReport';
 
 type AppScreen = 'home' | 'analysis';
 
@@ -80,6 +81,17 @@ const App: React.FC = () => {
     setCurrentScreen('home');
   }, [selectedImage, prediction]);
 
+  // Handle export report
+  const handleExportReport = useCallback(() => {
+    if (!prediction.data || !selectedImage?.file) return;
+
+    exportReport({
+      predictions: prediction.data,
+      modelInfo: modelInfo.data ?? null,
+      fileName: selectedImage.file.name,
+    });
+  }, [prediction.data, modelInfo.data, selectedImage]);
+
   // Determine subtitle based on screen
   const getSubtitle = () => {
     if (currentScreen === 'home') {
@@ -105,10 +117,11 @@ const App: React.FC = () => {
           {/* Action buttons */}
           <div className="flex gap-3">
             <button
+              onClick={handleExportReport}
               disabled={prediction.status !== 'success'}
               className="flex items-center gap-2 px-6 py-2.5 rounded-full theme-border border font-semibold text-sm theme-surface-hover transition-all disabled:opacity-50 disabled:cursor-not-allowed theme-surface"
             >
-              <Share className="w-4 h-4" />
+              <Download className="w-4 h-4" />
               Export Report
             </button>
           </div>
