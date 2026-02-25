@@ -77,7 +77,7 @@ async def lifespan(app: FastAPI):
     artifacts.clear()
 
 
-app = FastAPI(lifespan=lifespan)
+app = FastAPI(lifespan=lifespan, root_path='/api')
 
 
 @app.post('/predict', status_code=status.HTTP_200_OK)
