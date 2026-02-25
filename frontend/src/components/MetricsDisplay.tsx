@@ -37,7 +37,7 @@ const MetricsDisplay: React.FC<MetricsDisplayProps> = ({
   ];
 
   return (
-    <footer className="mt-auto border-t border-slate-800 bg-slate-900/50 py-8">
+    <footer className="mt-auto border-t theme-border theme-bg-secondary py-8 transition-colors">
       <div className="max-w-7xl mx-auto px-6 md:px-10">
         <div className="flex flex-col gap-6">
           {/* Metrics row */}
@@ -46,13 +46,13 @@ const MetricsDisplay: React.FC<MetricsDisplayProps> = ({
             <div className="flex gap-8">
               {metricItems.map((item) => (
                 <div key={item.label} className="flex flex-col">
-                  <span className="text-[10px] uppercase tracking-wider text-slate-500 font-bold">
+                  <span className="text-[10px] uppercase tracking-wider theme-text-muted font-bold">
                     {item.label}
                   </span>
                   {isLoading ? (
-                    <div className="h-5 w-12 bg-slate-700 rounded animate-pulse mt-1" />
+                    <div className="h-5 w-12 theme-surface rounded animate-pulse mt-1" />
                   ) : (
-                    <span className="text-sm font-semibold text-slate-200">
+                    <span className="text-sm font-semibold theme-text">
                       {item.value}
                     </span>
                   )}
@@ -62,11 +62,11 @@ const MetricsDisplay: React.FC<MetricsDisplayProps> = ({
 
             {/* Model info and links */}
             <div className="flex items-center gap-6">
-              <div className="text-xs text-slate-500 flex items-center gap-2">
+              <div className="text-xs theme-text-muted flex items-center gap-2">
                 <span className="inline-block w-2 h-2 rounded-full bg-green-500" />
                 <span>
                   {isLoading ? (
-                    <span className="inline-block h-4 w-32 bg-slate-700 rounded animate-pulse" />
+                    <span className="inline-block h-4 w-32 theme-surface rounded animate-pulse" />
                   ) : (
                     <>Model: {modelName} ({modelVersion})</>
                   )}
@@ -76,7 +76,7 @@ const MetricsDisplay: React.FC<MetricsDisplayProps> = ({
                 href="https://github.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center gap-2 text-xs font-medium text-slate-500 hover:text-primary transition-colors"
+                className="flex items-center gap-2 text-xs font-medium theme-text-muted hover:text-primary transition-colors"
               >
                 <Github className="w-4 h-4" />
                 Source on GitHub
@@ -85,8 +85,8 @@ const MetricsDisplay: React.FC<MetricsDisplayProps> = ({
           </div>
 
           {/* Disclaimer */}
-          <div className="border-t border-slate-800 pt-4">
-            <p className="text-[11px] text-slate-500 text-center leading-relaxed max-w-2xl mx-auto">
+          <div className="border-t theme-border pt-4">
+            <p className="text-[11px] theme-text-muted text-center leading-relaxed max-w-2xl mx-auto">
               <span className="font-bold text-primary/60">Disclaimer:</span>{' '}
               This tool is for research and educational purposes only and does not constitute medical advice. 
               Consult a healthcare professional for diagnosis.

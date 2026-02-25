@@ -63,7 +63,8 @@ async def lifespan(app: FastAPI):
 
     try:
         with open(classnames_path) as f:
-            classes = f.readlines()
+            classes = f.read()
+        classes = classes.split()
         artifacts['classes'] = classes
     except FileNotFoundError as e:
         raise ValueError('Class names not found') from e

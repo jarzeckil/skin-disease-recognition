@@ -47,47 +47,48 @@
 <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
 <div>
 <h1 class="text-3xl md:text-4xl font-black tracking-tight">Skin Lesion Analysis</h1>
-<p class="text-slate-500 dark:text-slate-400 mt-2">AI-powered dermatological diagnostic support</p>
+<p class="text-slate-500 dark:text-slate-400 mt-2">Review image and run diagnostic model</p>
 </div>
 <div class="flex gap-3">
-<button class="flex items-center gap-2 px-6 py-2.5 rounded-full border border-slate-200 dark:border-slate-700 font-semibold text-sm hover:bg-slate-100 dark:hover:bg-slate-800 transition-all">
+<button class="flex items-center gap-2 px-6 py-2.5 rounded-full border border-slate-200 dark:border-slate-700 font-semibold text-sm hover:bg-slate-100 dark:hover:bg-slate-800 transition-all bg-white dark:bg-slate-800">
 <span class="material-symbols-outlined text-sm">ios_share</span>
                     Export Report
-                </button>
-<button class="flex items-center gap-2 px-6 py-2.5 rounded-full bg-primary text-white font-semibold text-sm hover:bg-primary/90 shadow-lg shadow-primary/20 transition-all">
-<span class="material-symbols-outlined text-sm">verified</span>
-                    Verify Diagnosis
                 </button>
 </div>
 </div>
 <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-<div class="lg:col-span-7 flex flex-col h-full">
-<div class="group relative flex flex-col items-center justify-center gap-8 rounded-xl border-2 border-dashed border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 px-6 py-12 flex-1 min-h-[650px] hover:border-primary/50 dark:hover:border-primary/50 transition-all cursor-pointer h-full">
-<div class="w-40 h-40 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-4 group-hover:scale-110 transition-transform duration-300">
-<span class="material-symbols-outlined text-7xl">cloud_upload</span>
+<div class="lg:col-span-7 flex flex-col gap-6 h-full">
+<div class="flex flex-col gap-4 flex-1">
+<div class="relative w-full aspect-[4/3] rounded-2xl overflow-hidden shadow-lg border border-slate-200 dark:border-slate-800 group">
+<img alt="Uploaded skin lesion for analysis" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBDsw-uY86u0gdvW4n9bc9W1AtympVMdmxX07l7m7Pdqt4P8iMIswFeK-tLhS3vZ6EGsvg3-1MDKiVqFj-eJFEHknKLEnus0TbJQLGHyofg4MrI9wq06I9zCFjTfj4S2tX6DVwJVb_cMoL0cLEmaXB32UAUriFeI3Oy0gMTgJf0MBB-iyBwMICuYnzL6NFKb69GofulLjBarAWZdP_ZEu7j3oyZ0H2PVqQl3HBHEp98Z5d1SnxljNlZja5Om2T7hSLcslg00qbE9UX-"/>
+<div class="absolute top-4 right-4 bg-black/60 backdrop-blur-md text-white px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1">
+<span class="material-symbols-outlined text-sm">check_circle</span>
+                                Image Ready
+                            </div>
 </div>
-<div class="text-center space-y-3">
-<p class="text-4xl font-bold">Upload Skin Image</p>
-<p class="text-slate-500 dark:text-slate-400 text-lg max-w-md mx-auto">Drag and drop or click to upload a high-resolution image of the lesion for immediate analysis.</p>
-<p class="text-slate-400 dark:text-slate-500 text-sm mt-4">Supported formats: JPEG, PNG, WEBP (Max 20MB)</p>
+<div class="flex flex-col sm:flex-row gap-4 items-center pt-2">
+<button class="flex-1 w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-4 bg-primary/90 hover:bg-primary text-white rounded-full font-bold text-lg shadow-lg hover:shadow-primary/20 transition-all">
+<span class="material-symbols-outlined">play_arrow</span>
+                                Run Diagnosis
+                            </button>
+<button class="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 rounded-full font-semibold text-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition-all">
+<span class="material-symbols-outlined">add_a_photo</span>
+                                Change Photo
+                            </button>
 </div>
-<button class="px-12 py-4 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 rounded-full font-bold text-lg mt-8 hover:shadow-lg transition-shadow">
-                        Select File
-                    </button>
 </div>
 </div>
 <div class="lg:col-span-5 space-y-6">
-<div class="bg-primary/10 dark:bg-primary/5 border border-primary/20 rounded-xl p-6 flex flex-col md:flex-row gap-6 items-center">
-<div class="flex-1 md:text-left">
-<p class="text-primary text-xs font-bold uppercase tracking-widest mb-1">Primary Prediction</p>
-<h3 class="text-2xl font-black mb-1">Melanoma</h3>
-<div class="flex items-center md:justify-start gap-2">
-<span class="text-3xl font-bold text-primary">94.2%</span>
-<span class="text-slate-500 text-sm font-medium">Confidence</span>
+<div class="bg-slate-100 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl p-6 flex flex-col justify-center items-center min-h-[160px] text-center gap-3">
+<div class="w-12 h-12 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center animate-pulse">
+<span class="material-symbols-outlined text-slate-400">analytics</span>
+</div>
+<div>
+<h3 class="text-lg font-bold text-slate-700 dark:text-slate-300">Analysis Pending</h3>
+<p class="text-sm text-slate-500 dark:text-slate-400">Run diagnosis to see primary prediction</p>
 </div>
 </div>
-</div>
-<div class="bg-white dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800 rounded-xl p-6 shadow-sm">
+<div class="bg-white dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800 rounded-xl p-6 shadow-sm opacity-60 pointer-events-none select-none grayscale-[0.5]">
 <div class="flex justify-between items-center mb-6">
 <h4 class="font-bold text-lg">Differential Diagnosis</h4>
 <span class="text-xs bg-slate-100 dark:bg-slate-700 px-2 py-1 rounded-md text-slate-500 dark:text-slate-400">Top 5 Probabilities</span>
@@ -95,47 +96,29 @@
 <div class="space-y-5">
 <div class="space-y-1.5">
 <div class="flex justify-between text-sm">
-<span class="font-semibold">Melanoma</span>
-<span class="text-primary font-bold">94.2%</span>
+<span class="font-semibold text-slate-400 dark:text-slate-500">Waiting for data...</span>
+<span class="text-slate-300 dark:text-slate-600 font-bold">--%</span>
 </div>
 <div class="w-full h-2.5 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
-<div class="h-full bg-primary rounded-full" style="width: 94.2%"></div>
+<div class="h-full bg-slate-300 dark:bg-slate-600 rounded-full" style="width: 0%"></div>
 </div>
 </div>
 <div class="space-y-1.5">
 <div class="flex justify-between text-sm">
-<span class="font-semibold text-slate-600 dark:text-slate-400">Basal Cell Carcinoma</span>
-<span class="text-slate-600 dark:text-slate-400 font-bold">3.1%</span>
+<span class="font-semibold text-slate-400 dark:text-slate-500">Waiting for data...</span>
+<span class="text-slate-300 dark:text-slate-600 font-bold">--%</span>
 </div>
 <div class="w-full h-2 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
-<div class="h-full bg-slate-400 dark:bg-slate-500 rounded-full" style="width: 3.1%"></div>
+<div class="h-full bg-slate-300 dark:bg-slate-600 rounded-full" style="width: 0%"></div>
 </div>
 </div>
 <div class="space-y-1.5">
 <div class="flex justify-between text-sm">
-<span class="font-semibold text-slate-600 dark:text-slate-400">Seborrheic Keratosis</span>
-<span class="text-slate-600 dark:text-slate-400 font-bold">1.4%</span>
+<span class="font-semibold text-slate-400 dark:text-slate-500">Waiting for data...</span>
+<span class="text-slate-300 dark:text-slate-600 font-bold">--%</span>
 </div>
 <div class="w-full h-2 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
-<div class="h-full bg-slate-400 dark:bg-slate-500 rounded-full" style="width: 1.4%"></div>
-</div>
-</div>
-<div class="space-y-1.5">
-<div class="flex justify-between text-sm">
-<span class="font-semibold text-slate-600 dark:text-slate-400">Nevus</span>
-<span class="text-slate-600 dark:text-slate-400 font-bold">0.8%</span>
-</div>
-<div class="w-full h-2 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
-<div class="h-full bg-slate-400 dark:bg-slate-500 rounded-full" style="width: 0.8%"></div>
-</div>
-</div>
-<div class="space-y-1.5">
-<div class="flex justify-between text-sm">
-<span class="font-semibold text-slate-600 dark:text-slate-400">Actinic Keratosis</span>
-<span class="text-slate-600 dark:text-slate-400 font-bold">0.5%</span>
-</div>
-<div class="w-full h-2 bg-slate-100 dark:bg-slate-700 rounded-full overflow-hidden">
-<div class="h-full bg-slate-400 dark:bg-slate-500 rounded-full" style="width: 0.5%"></div>
+<div class="h-full bg-slate-300 dark:bg-slate-600 rounded-full" style="width: 0%"></div>
 </div>
 </div>
 </div>
