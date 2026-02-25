@@ -1,0 +1,35 @@
+# Git
+.git
+.gitignore
+
+# data and models
+models/
+data/
+*.pth
+*.onnx
+*.pkl
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+.env
+.pytest_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+
+# Docker & CI/CD
+docker-compose.yml
+Dockerfile
+.github/
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/build/
+
+# misc
+.DS_Store
+Thumbs.db
+README.md
