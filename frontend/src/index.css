@@ -76,6 +76,10 @@ body {
   background-color: var(--theme-surface);
 }
 
+.theme-surface-secondary {
+  background-color: var(--theme-bg-secondary);
+}
+
 .theme-surface-hover:hover {
   background-color: var(--theme-surface-hover);
 }
