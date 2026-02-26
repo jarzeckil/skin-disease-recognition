@@ -33,6 +33,7 @@ jobs:
 
       - name: Check Formatting
         run: uv run ruff format --check .
+
   build-docker:
     needs: quality-check
     runs-on: ubuntu-latest
@@ -40,6 +41,23 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install DVC
+        run: pip install dvc dvc-http
+
+      - name: Configure DVC Remote
+        run: |
+          dvc remote modify origin --local auth basic
+          dvc remote modify origin --local user ${{ secrets.USERNAME }}
+          dvc remote modify origin --local password ${{ secrets.DAGSHUB_TOKEN }}
+
+      - name: Pull Model from DAGsHub
+        run: dvc pull -r origin
 
       - name: Login to Docker Hub
         if: github.event_name != 'pull_request'
@@ -60,19 +78,20 @@ jobs:
         with:
           context: .
           push: true
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
           tags: |
             ${{ secrets.USERNAME }}/skin-disease-api:latest
             ${{ secrets.USERNAME }}/skin-disease-api:${{ steps.vars.outputs.sha_short }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
 
       - name: Build and Push Docker Image (frontend)
         uses: docker/build-push-action@v5
         with:
           context: ./frontend
           push: true
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
           tags: |
             ${{ secrets.USERNAME }}/skin-disease-frontend:latest
             ${{ secrets.USERNAME }}/skin-disease-frontend:${{ steps.vars.outputs.sha_short }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

@@ -20,6 +20,8 @@ services:
       - private-network
     depends_on:
       - api
+    environment:
+      - API_HOST=api
 
 
 networks:

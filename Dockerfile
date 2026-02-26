@@ -14,6 +14,7 @@ ENV PYTHONUNBUFFERED=1 \
 COPY pyproject.toml uv.lock ./
 RUN uv sync --frozen --no-install-project --group pytorch
 COPY src ./src
+COPY models ./models
 
 RUN useradd -m appuser && chown -R appuser /app
 USER appuser
