@@ -3,7 +3,6 @@
 .gitignore
 
 # data and models
-models/
 data/
 *.pth
 *.onnx
