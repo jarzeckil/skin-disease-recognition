@@ -46,5 +46,7 @@ with open(DEST_DIR / model_name / 'metrics.json', 'w') as f:
     json.dump(metrics, f)
 
 # TODO download class names from mlflow
+# TODO download classification report
+# TODO pull model version
 
 print('Export complete.')
