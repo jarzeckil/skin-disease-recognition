@@ -73,7 +73,7 @@ const MetricsDisplay: React.FC<MetricsDisplayProps> = ({
                 </span>
               </div>
               <a
-                href="https://github.com"
+                href="https://github.com/jarzeckil/skin-disease-recognition"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 text-xs font-medium theme-text-muted hover:text-primary transition-colors"
