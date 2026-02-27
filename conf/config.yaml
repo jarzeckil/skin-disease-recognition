@@ -24,8 +24,9 @@ loss_function:
   label_smoothing: 0.2
 
 scheduler:
-  patience: 1
+  patience: 2
   factor: 0.5
+  threshold: 0.015
 
 optimizer:
   adamw:
