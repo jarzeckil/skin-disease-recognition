@@ -103,7 +103,6 @@ async def predict(file: UploadFile):
 
 @app.get('/info', status_code=status.HTTP_200_OK)
 async def info():
-
     model_info_response = {
         'model_name': artifacts['metadata']['model_name'],
         'model_version': artifacts['metadata']['version'],
