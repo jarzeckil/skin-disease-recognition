@@ -24,7 +24,7 @@ loss_function:
   label_smoothing: 0.2
 
 scheduler:
-  patience: 2
+  patience: 1
   factor: 0.5
 
 optimizer:
