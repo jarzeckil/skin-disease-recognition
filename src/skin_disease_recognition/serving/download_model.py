@@ -47,7 +47,7 @@ with open(path / 'model_data.json', 'w') as f:
 with open(path / 'metrics.json', 'w') as f:
     json.dump(metrics, f)
 
-mlflow.artifacts.download_artifacts(run_id=run_id, artifact_path='classification_report.txt', dst_path=path)
+mlflow.artifacts.download_artifacts(run_id=run_id, artifact_path='classification_report.json', dst_path=path)
 mlflow.artifacts.download_artifacts(run_id=run_id, artifact_path='class_names.txt', dst_path=path)
 
 print('Export complete.')
