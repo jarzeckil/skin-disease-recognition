@@ -119,7 +119,7 @@ async def info():
     }
 
     metrics_response = {
-        'f1': metrics['f1'],
+        'f1': metrics['f1-score'],
         'accuracy': metrics['accuracy'],
         'recall': metrics['recall'],
         'precision': metrics['precision'],
