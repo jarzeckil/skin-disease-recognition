@@ -1,7 +1,7 @@
 services:
   api:
     build: .
-    image: skin-disease:latest
+    image: skin-disease-backend:latest
     container_name: skin-disease-api
     volumes:
       - ./models:/app/models:z
@@ -11,7 +11,7 @@ services:
       - private-network
   nginx:
     build: ./frontend
-    image: skin-disease-nginx:latest
+    image: skin-disease-frontend:latest
     container_name: skin-disease-nginx
     ports:
       - "80:80"
