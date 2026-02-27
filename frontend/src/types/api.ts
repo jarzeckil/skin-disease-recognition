@@ -8,21 +8,9 @@ export interface PredictionResponse {
 }
 
 // GET /info response
-export interface ModelMetrics {
-  f1: number;
-  accuracy: number;
-  recall: number;
-  precision: number;
-}
-
-export interface ModelInfo {
+export interface ModelInfoResponse {
   model_name: string;
   model_version: string;
-}
-
-export interface ModelInfoResponse {
-  model_info: ModelInfo;
-  metrics: ModelMetrics;
 }
 
 // GET /report response

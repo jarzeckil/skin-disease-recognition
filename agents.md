@@ -311,52 +311,24 @@ GET /info
 **Response (200 OK):**
 ```typescript
 interface ModelInfoResponse {
-  model_info: {
-    model_name: string;
-    model_version: string;
-  };
-  metrics: {
-    f1: number;
-    accuracy: number;
-    recall: number;
-    precision: number;
-  };
+  model_name: string;
+  model_version: string;
 }
 ```
 
 ```json
 {
-  "model_info": {
-    "model_name": "EFFICIENTNET-B0",
-    "model_version": "v1.0.0"
-  },
-  "metrics": {
-    "f1": 0.7818295955657959,
-    "accuracy": 0.8046571612358093,
-    "recall": 0.7854492664337158,
-    "precision": 0.7833981513977051
-  }
+  "model_name": "EFFICIENTNET-B0",
+  "model_version": "v1.0.0"
 }
 ```
 
 **Typy TypeScript:**
 ```typescript
 // types/api.ts
-export interface ModelMetrics {
-  f1: number;
-  accuracy: number;
-  recall: number;
-  precision: number;
-}
-
-export interface ModelInfo {
+export interface ModelInfoResponse {
   model_name: string;
   model_version: string;
-}
-
-export interface ModelInfoResponse {
-  model_info: ModelInfo;
-  metrics: ModelMetrics;
 }
 ```
 

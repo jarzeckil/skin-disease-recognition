@@ -19,6 +19,7 @@ const METRIC_DESCRIPTIONS = {
   support: 'Number of samples in the test set for each class.',
   macroF1: 'Average F1-score across all classes, treating each class equally regardless of size.',
   macroPrecision: 'Average precision across all classes, treating each class equally.',
+  macroRecall: 'Average recall across all classes, treating each class equally.',
 } as const;
 
 // InfoTooltip component
@@ -274,14 +275,14 @@ const ClassificationReport: React.FC<ClassificationReportProps> = ({
   return (
     <div className="flex flex-col gap-6">
       {/* Overall Metrics Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
         {/* Overall Accuracy */}
-        <div className="theme-surface theme-border border p-5 rounded-2xl shadow-sm flex flex-col gap-2">
-          <span className="theme-text-muted text-xs font-bold uppercase tracking-wider flex items-center">
+        <div className="theme-surface theme-border border p-5 rounded-2xl shadow-sm flex flex-col">
+          <span className="theme-text-muted text-xs font-bold uppercase tracking-wider flex items-center min-h-[2.5rem]">
             Overall Accuracy
             <InfoTooltip text={METRIC_DESCRIPTIONS.accuracy} />
           </span>
-          <div className="flex items-end gap-2">
+          <div className="flex items-end gap-2 mt-auto">
             <span className="text-3xl font-bold theme-text">
               {formatMetric(overallMetrics.accuracy, true)}
             </span>
@@ -289,12 +290,12 @@ const ClassificationReport: React.FC<ClassificationReportProps> = ({
         </div>
 
         {/* Macro Avg F1 */}
-        <div className="theme-surface theme-border border p-5 rounded-2xl shadow-sm flex flex-col gap-2">
-          <span className="theme-text-muted text-xs font-bold uppercase tracking-wider flex items-center">
+        <div className="theme-surface theme-border border p-5 rounded-2xl shadow-sm flex flex-col">
+          <span className="theme-text-muted text-xs font-bold uppercase tracking-wider flex items-center min-h-[2.5rem]">
             Macro Avg F1
             <InfoTooltip text={METRIC_DESCRIPTIONS.macroF1} />
           </span>
-          <div className="flex items-end gap-2">
+          <div className="flex items-end gap-2 mt-auto">
             <span className="text-3xl font-bold theme-text">
               {formatMetric(overallMetrics.macroF1)}
             </span>
@@ -302,25 +303,38 @@ const ClassificationReport: React.FC<ClassificationReportProps> = ({
         </div>
 
         {/* Macro Precision */}
-        <div className="theme-surface theme-border border p-5 rounded-2xl shadow-sm flex flex-col gap-2">
-          <span className="theme-text-muted text-xs font-bold uppercase tracking-wider flex items-center">
+        <div className="theme-surface theme-border border p-5 rounded-2xl shadow-sm flex flex-col">
+          <span className="theme-text-muted text-xs font-bold uppercase tracking-wider flex items-center min-h-[2.5rem]">
             Macro Precision
             <InfoTooltip text={METRIC_DESCRIPTIONS.macroPrecision} />
           </span>
-          <div className="flex items-end gap-2">
+          <div className="flex items-end gap-2 mt-auto">
             <span className="text-3xl font-bold theme-text">
               {formatMetric(overallMetrics.macroPrecision)}
             </span>
           </div>
         </div>
 
+        {/* Macro Recall */}
+        <div className="theme-surface theme-border border p-5 rounded-2xl shadow-sm flex flex-col">
+          <span className="theme-text-muted text-xs font-bold uppercase tracking-wider flex items-center min-h-[2.5rem]">
+            Macro Recall
+            <InfoTooltip text={METRIC_DESCRIPTIONS.macroRecall} />
+          </span>
+          <div className="flex items-end gap-2 mt-auto">
+            <span className="text-3xl font-bold theme-text">
+              {formatMetric(overallMetrics.macroRecall)}
+            </span>
+          </div>
+        </div>
+
         {/* Total Support */}
-        <div className="theme-surface theme-border border p-5 rounded-2xl shadow-sm flex flex-col gap-2">
-          <span className="theme-text-muted text-xs font-bold uppercase tracking-wider flex items-center">
+        <div className="theme-surface theme-border border p-5 rounded-2xl shadow-sm flex flex-col">
+          <span className="theme-text-muted text-xs font-bold uppercase tracking-wider flex items-center min-h-[2.5rem]">
             Total Support
             <InfoTooltip text={METRIC_DESCRIPTIONS.support} />
           </span>
-          <div className="flex items-end gap-2">
+          <div className="flex items-end gap-2 mt-auto">
             <span className="text-3xl font-bold theme-text">
               {formatSupport(overallMetrics.totalSupport)}
             </span>

@@ -34,7 +34,6 @@ async def lifespan(app: FastAPI):
     model_folder = os.path.join(model_storage, model_name)
 
     model_path = os.path.join(model_folder, 'model.pth')
-    metrics_path = os.path.join(model_folder, 'metrics.json')
     data_path = os.path.join(model_folder, 'model_data.json')
     classnames_path = os.path.join(model_folder, 'class_names.txt')
     classif_report_path = os.path.join(model_folder, 'classification_report.json')
@@ -48,13 +47,6 @@ async def lifespan(app: FastAPI):
         logger.info('Model loaded successfully')
     except FileNotFoundError as e:
         raise ValueError('Model not found') from e
-
-    try:
-        with open(metrics_path) as f:
-            metrics = json.load(f)
-        artifacts['metrics'] = metrics
-    except FileNotFoundError as e:
-        raise ValueError('Metrics not found') from e
 
     try:
         with open(data_path) as f:
@@ -111,21 +103,13 @@ async def predict(file: UploadFile):
 
 @app.get('/info', status_code=status.HTTP_200_OK)
 async def info():
-    metrics = artifacts['metrics']
 
     model_info_response = {
         'model_name': artifacts['metadata']['model_name'],
         'model_version': artifacts['metadata']['version'],
     }
 
-    metrics_response = {
-        'f1': metrics['f1-score'],
-        'accuracy': metrics['accuracy'],
-        'recall': metrics['recall'],
-        'precision': metrics['precision'],
-    }
-
-    response = {'model_info': model_info_response, 'metrics': metrics_response}
+    response = model_info_response
 
     return response
 
