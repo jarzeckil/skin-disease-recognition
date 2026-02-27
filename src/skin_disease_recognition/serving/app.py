@@ -23,6 +23,7 @@ artifacts = {}
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     device = ACTIVE_DEVICE
+    artifacts['device'] = device
     if device is None:
         raise ValueError('Active device name not found in .env')
 
@@ -85,10 +86,11 @@ async def predict(file: UploadFile):
     transform: A.Compose = artifacts['transform']
     model: nn.Module = artifacts['model']
     classes: list[str] = artifacts['classes']
+    device = artifacts['device']
 
     mat = await get_data_from_file(file)
     data: torch.Tensor = transform(image=mat)['image']
-    data = data.unsqueeze(0)
+    data = data.unsqueeze(0).to(device)
 
     with torch.no_grad():
         pred = model(data)
@@ -102,15 +104,19 @@ async def predict(file: UploadFile):
 @app.get('/info', status_code=status.HTTP_200_OK)
 async def info():
     metr = artifacts['metrics']
-    model_name = artifacts['metadata']['model_name']
 
-    metr_response = {
+    model_info_response = {
+        'model_name': artifacts['metadata']['model_name'],
+        'model_version': artifacts['metadata']['version']
+    }
+
+    metrics_response = {
         'f1': metr['f1'],
         'accuracy': metr['accuracy'],
         'recall': metr['recall'],
         'precision': metr['precision'],
     }
 
-    response = {'model_name': model_name, 'metrics': metr_response}
+    response = {'model_info': model_info_response, 'metrics': metrics_response}
 
     return response
