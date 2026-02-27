@@ -3,11 +3,76 @@
  * Connected to /api/report endpoint
  */
 
-import { useMemo } from 'react';
-import { AlertCircle, Loader2 } from 'lucide-react';
+import { useMemo, useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
+import { AlertCircle, Loader2, Info } from 'lucide-react';
 import type { SortMetric } from './Sidebar';
 import { useClassificationReport } from '../hooks';
 import type { ClassificationReportResponse } from '../types/api';
+
+// Metric descriptions for tooltips
+const METRIC_DESCRIPTIONS = {
+  accuracy: 'Percentage of correctly classified samples out of all samples.',
+  precision: 'Of all samples marked as positive, how many were actually positive.',
+  recall: 'Of all actual positive samples, how many were detected.',
+  f1Score: 'Harmonic mean of precision and recall. Balances both metrics into a single score.',
+  support: 'Number of samples in the test set for each class.',
+  macroF1: 'Average F1-score across all classes, treating each class equally regardless of size.',
+  macroPrecision: 'Average precision across all classes, treating each class equally.',
+} as const;
+
+// InfoTooltip component
+interface InfoTooltipProps {
+  text: string;
+}
+
+const InfoTooltip: React.FC<InfoTooltipProps> = ({ text }) => {
+  const [isVisible, setIsVisible] = useState(false);
+  const [position, setPosition] = useState({ top: 0, left: 0 });
+  const buttonRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (isVisible && buttonRef.current) {
+      const rect = buttonRef.current.getBoundingClientRect();
+      setPosition({
+        top: rect.bottom + 8,
+        left: rect.left + rect.width / 2,
+      });
+    }
+  }, [isVisible]);
+
+  return (
+    <>
+      <button
+        ref={buttonRef}
+        type="button"
+        className="inline-flex items-center justify-center w-4 h-4 rounded-full bg-slate-600/50 hover:bg-slate-500/50 transition-colors cursor-help ml-1"
+        onMouseEnter={() => setIsVisible(true)}
+        onMouseLeave={() => setIsVisible(false)}
+        onFocus={() => setIsVisible(true)}
+        onBlur={() => setIsVisible(false)}
+        aria-label="More information"
+      >
+        <Info className="w-2.5 h-2.5 text-slate-300" />
+      </button>
+      {isVisible &&
+        createPortal(
+          <div
+            className="fixed z-[9999] px-3 py-2 text-xs font-normal normal-case tracking-normal text-white bg-slate-800 rounded-lg shadow-xl w-56 text-left border border-slate-700 pointer-events-none"
+            style={{
+              top: position.top,
+              left: position.left,
+              transform: 'translateX(-50%)',
+            }}
+          >
+            <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-[-1px] border-4 border-transparent border-b-slate-800" />
+            {text}
+          </div>,
+          document.body
+        )}
+    </>
+  );
+};
 
 // Types for classification metrics (display format)
 interface ClassMetrics {
@@ -212,8 +277,9 @@ const ClassificationReport: React.FC<ClassificationReportProps> = ({
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Overall Accuracy */}
         <div className="theme-surface theme-border border p-5 rounded-2xl shadow-sm flex flex-col gap-2">
-          <span className="theme-text-muted text-xs font-bold uppercase tracking-wider">
+          <span className="theme-text-muted text-xs font-bold uppercase tracking-wider flex items-center">
             Overall Accuracy
+            <InfoTooltip text={METRIC_DESCRIPTIONS.accuracy} />
           </span>
           <div className="flex items-end gap-2">
             <span className="text-3xl font-bold theme-text">
@@ -224,8 +290,9 @@ const ClassificationReport: React.FC<ClassificationReportProps> = ({
 
         {/* Macro Avg F1 */}
         <div className="theme-surface theme-border border p-5 rounded-2xl shadow-sm flex flex-col gap-2">
-          <span className="theme-text-muted text-xs font-bold uppercase tracking-wider">
+          <span className="theme-text-muted text-xs font-bold uppercase tracking-wider flex items-center">
             Macro Avg F1
+            <InfoTooltip text={METRIC_DESCRIPTIONS.macroF1} />
           </span>
           <div className="flex items-end gap-2">
             <span className="text-3xl font-bold theme-text">
@@ -236,8 +303,9 @@ const ClassificationReport: React.FC<ClassificationReportProps> = ({
 
         {/* Macro Precision */}
         <div className="theme-surface theme-border border p-5 rounded-2xl shadow-sm flex flex-col gap-2">
-          <span className="theme-text-muted text-xs font-bold uppercase tracking-wider">
+          <span className="theme-text-muted text-xs font-bold uppercase tracking-wider flex items-center">
             Macro Precision
+            <InfoTooltip text={METRIC_DESCRIPTIONS.macroPrecision} />
           </span>
           <div className="flex items-end gap-2">
             <span className="text-3xl font-bold theme-text">
@@ -248,8 +316,9 @@ const ClassificationReport: React.FC<ClassificationReportProps> = ({
 
         {/* Total Support */}
         <div className="theme-surface theme-border border p-5 rounded-2xl shadow-sm flex flex-col gap-2">
-          <span className="theme-text-muted text-xs font-bold uppercase tracking-wider">
+          <span className="theme-text-muted text-xs font-bold uppercase tracking-wider flex items-center">
             Total Support
+            <InfoTooltip text={METRIC_DESCRIPTIONS.support} />
           </span>
           <div className="flex items-end gap-2">
             <span className="text-3xl font-bold theme-text">
@@ -270,16 +339,28 @@ const ClassificationReport: React.FC<ClassificationReportProps> = ({
                   Condition
                 </th>
                 <th className="py-4 px-6 text-xs font-bold uppercase tracking-wider theme-text-muted w-1/6 text-center">
-                  Precision
+                  <span className="inline-flex items-center justify-center">
+                    Precision
+                    <InfoTooltip text={METRIC_DESCRIPTIONS.precision} />
+                  </span>
                 </th>
                 <th className="py-4 px-6 text-xs font-bold uppercase tracking-wider theme-text-muted w-1/6 text-center">
-                  Recall
+                  <span className="inline-flex items-center justify-center">
+                    Recall
+                    <InfoTooltip text={METRIC_DESCRIPTIONS.recall} />
+                  </span>
                 </th>
                 <th className="py-4 px-6 text-xs font-bold uppercase tracking-wider theme-text-muted w-1/6 text-center">
-                  F1-Score
+                  <span className="inline-flex items-center justify-center">
+                    F1-Score
+                    <InfoTooltip text={METRIC_DESCRIPTIONS.f1Score} />
+                  </span>
                 </th>
                 <th className="py-4 px-6 text-xs font-bold uppercase tracking-wider theme-text-muted w-1/6 text-right">
-                  Support
+                  <span className="inline-flex items-center justify-end">
+                    Support
+                    <InfoTooltip text={METRIC_DESCRIPTIONS.support} />
+                  </span>
                 </th>
               </tr>
             </thead>
