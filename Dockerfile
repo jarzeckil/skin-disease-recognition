@@ -1,7 +1,8 @@
 FROM python:3.13-slim
 WORKDIR /app
 
-RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates
+RUN apt-get update && apt-get install -y --no-install-recommends curl ca-certificates  \
+    && rm -rf /var/lib/apt/lists/*
 ADD https://astral.sh/uv/install.sh /uv-installer.sh
 RUN sh /uv-installer.sh && rm /uv-installer.sh
 ENV PATH="/root/.local/bin/:$PATH"
@@ -11,8 +12,13 @@ ENV PYTHONUNBUFFERED=1 \
     PYTHONPATH="${PYTHONPATH}:/app/src" \
     PATH="/app/.venv/bin:$PATH"
 
+
 COPY pyproject.toml uv.lock ./
-RUN uv sync --frozen --no-install-project --group pytorch
+
+RUN sed -i 's/index = "pytorch-cuda"/index = "pytorch-cpu"/g' pyproject.toml && \
+    uv lock --upgrade-package torch --upgrade-package torchvision && \
+    uv sync --frozen --no-install-project --no-dev --group pytorch
+
 COPY src ./src
 COPY models ./models
 
