@@ -5,7 +5,7 @@ defaults:
 experiment_name: 'SkinDisease'
 device: 'cuda'
 seed: 42
-max_epochs: 30
+max_epochs: 50
 freeze_layers: false
 
 data:
@@ -24,9 +24,10 @@ loss_function:
   label_smoothing: 0.2
 
 scheduler:
-  patience: 1
+  patience: 3
   factor: 0.5
-  threshold: 0.015
+  threshold: 0.005
+  threshold_mode: rel
 
 optimizer:
   adamw:
