@@ -25,6 +25,18 @@ export interface ModelInfoResponse {
   metrics: ModelMetrics;
 }
 
+// GET /report response
+export interface ClassMetricsData {
+  precision: number;
+  recall: number;
+  'f1-score': number;
+  support: number;
+}
+
+export interface ClassificationReportResponse {
+  [className: string]: ClassMetricsData;
+}
+
 // Request status for API calls
 export type RequestStatus = 'idle' | 'loading' | 'success' | 'error';
 

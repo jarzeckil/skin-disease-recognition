@@ -1,16 +1,17 @@
 /**
  * ClassificationReport - Model Performance Heatmap Dashboard
- * Based on model_details Stitch reference
+ * Connected to /api/report endpoint
  */
 
 import { useMemo } from 'react';
-import { TrendingUp } from 'lucide-react';
+import { AlertCircle, Loader2 } from 'lucide-react';
 import type { SortMetric } from './Sidebar';
+import { useClassificationReport } from '../hooks';
+import type { ClassificationReportResponse } from '../types/api';
 
-// Types for classification metrics
+// Types for classification metrics (display format)
 interface ClassMetrics {
   condition: string;
-  category: 'Malignant' | 'Pre-malignant' | 'Benign';
   precision: number;
   recall: number;
   f1Score: number;
@@ -20,48 +21,55 @@ interface ClassMetrics {
 interface OverallMetrics {
   accuracy: number;
   macroF1: number;
+  macroPrecision: number;
+  macroRecall: number;
   totalSupport: number;
-  modelVersion: string;
 }
 
 interface ClassificationReportProps {
-  classMetrics?: ClassMetrics[];
-  overallMetrics?: OverallMetrics;
   searchQuery?: string;
   sortMetric?: SortMetric;
 }
 
-// Mock data for 22 skin conditions
-const MOCK_CLASS_METRICS: ClassMetrics[] = [
-  { condition: 'Melanoma', category: 'Malignant', precision: 0.92, recall: 0.88, f1Score: 0.90, support: 1240 },
-  { condition: 'Basal Cell Carcinoma', category: 'Malignant', precision: 0.95, recall: 0.94, f1Score: 0.94, support: 3100 },
-  { condition: 'Squamous Cell Carcinoma', category: 'Malignant', precision: 0.89, recall: 0.85, f1Score: 0.87, support: 980 },
-  { condition: 'Actinic Keratosis', category: 'Pre-malignant', precision: 0.82, recall: 0.79, f1Score: 0.80, support: 540 },
-  { condition: 'Seborrheic Keratosis', category: 'Benign', precision: 0.91, recall: 0.93, f1Score: 0.92, support: 1150 },
-  { condition: 'Dermatofibroma', category: 'Benign', precision: 0.76, recall: 0.72, f1Score: 0.74, support: 210 },
-  { condition: 'Vascular Lesion', category: 'Benign', precision: 0.88, recall: 0.90, f1Score: 0.89, support: 320 },
-  { condition: 'Nevus', category: 'Benign', precision: 0.96, recall: 0.97, f1Score: 0.96, support: 5600 },
-  { condition: 'Pigmented Benign Keratosis', category: 'Benign', precision: 0.84, recall: 0.81, f1Score: 0.82, support: 890 },
-  { condition: 'Solar Lentigo', category: 'Benign', precision: 0.87, recall: 0.85, f1Score: 0.86, support: 420 },
-  { condition: 'Lentigo Maligna', category: 'Pre-malignant', precision: 0.78, recall: 0.74, f1Score: 0.76, support: 180 },
-  { condition: 'Atypical Melanocytic Proliferation', category: 'Pre-malignant', precision: 0.71, recall: 0.68, f1Score: 0.69, support: 95 },
-  { condition: "Bowen's Disease", category: 'Pre-malignant', precision: 0.83, recall: 0.80, f1Score: 0.81, support: 230 },
-  { condition: 'Kaposi Sarcoma', category: 'Malignant', precision: 0.90, recall: 0.87, f1Score: 0.88, support: 145 },
-  { condition: 'Merkel Cell Carcinoma', category: 'Malignant', precision: 0.86, recall: 0.82, f1Score: 0.84, support: 78 },
-  { condition: 'Dermatitis', category: 'Benign', precision: 0.79, recall: 0.76, f1Score: 0.77, support: 560 },
-  { condition: 'Psoriasis', category: 'Benign', precision: 0.85, recall: 0.88, f1Score: 0.86, support: 480 },
-  { condition: 'Eczema', category: 'Benign', precision: 0.81, recall: 0.78, f1Score: 0.79, support: 620 },
-  { condition: 'Rosacea', category: 'Benign', precision: 0.88, recall: 0.91, f1Score: 0.89, support: 340 },
-  { condition: 'Vitiligo', category: 'Benign', precision: 0.94, recall: 0.96, f1Score: 0.95, support: 275 },
-  { condition: 'Tinea', category: 'Benign', precision: 0.82, recall: 0.79, f1Score: 0.80, support: 390 },
-  { condition: 'Warts', category: 'Benign', precision: 0.89, recall: 0.92, f1Score: 0.90, support: 510 },
-];
+// Reserved keys in API response that are not class metrics
+const RESERVED_KEYS = ['accuracy', 'macro avg', 'weighted avg'];
 
-const MOCK_OVERALL_METRICS: OverallMetrics = {
-  accuracy: 0.948,
-  macroF1: 0.92,
-  totalSupport: 12840,
-  modelVersion: 'v2.4.1',
+/**
+ * Transform API response to display format
+ */
+const transformApiData = (
+  data: ClassificationReportResponse
+): { classMetrics: ClassMetrics[]; overallMetrics: OverallMetrics } => {
+  const classMetrics: ClassMetrics[] = [];
+
+  // Extract class metrics (exclude reserved keys)
+  for (const [key, value] of Object.entries(data)) {
+    if (RESERVED_KEYS.includes(key)) continue;
+    
+    classMetrics.push({
+      condition: key.replace(/_/g, ' '),
+      precision: value.precision,
+      recall: value.recall,
+      f1Score: value['f1-score'],
+      support: value.support,
+    });
+  }
+
+  // Extract overall metrics
+  const macroAvg = data['macro avg'];
+  const accuracy = typeof data.accuracy === 'number' 
+    ? data.accuracy 
+    : (data.accuracy as unknown as { precision: number })?.precision ?? 0;
+
+  const overallMetrics: OverallMetrics = {
+    accuracy: accuracy,
+    macroF1: macroAvg?.['f1-score'] ?? 0,
+    macroPrecision: macroAvg?.precision ?? 0,
+    macroRecall: macroAvg?.recall ?? 0,
+    totalSupport: macroAvg?.support ?? 0,
+  };
+
+  return { classMetrics, overallMetrics };
 };
 
 /**
@@ -93,7 +101,7 @@ const formatMetric = (value: number, asPercent: boolean = false): string => {
  * Format support number with commas
  */
 const formatSupport = (value: number): string => {
-  return value.toLocaleString();
+  return Math.round(value).toLocaleString();
 };
 
 /**
@@ -109,10 +117,8 @@ const useFilteredAndSortedMetrics = (
     let filtered = metrics;
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase().trim();
-      filtered = metrics.filter(
-        (item) =>
-          item.condition.toLowerCase().includes(query) ||
-          item.category.toLowerCase().includes(query)
+      filtered = metrics.filter((item) =>
+        item.condition.toLowerCase().includes(query)
       );
     }
 
@@ -145,16 +151,60 @@ const useFilteredAndSortedMetrics = (
 };
 
 const ClassificationReport: React.FC<ClassificationReportProps> = ({
-  classMetrics = MOCK_CLASS_METRICS,
-  overallMetrics = MOCK_OVERALL_METRICS,
   searchQuery = '',
   sortMetric = 'f1-desc',
 }) => {
+  const { status, data, error, refresh } = useClassificationReport();
+
+  // Transform API data to display format
+  const { classMetrics, overallMetrics } = useMemo(() => {
+    if (!data) {
+      return { classMetrics: [], overallMetrics: null };
+    }
+    return transformApiData(data);
+  }, [data]);
+
   const displayedMetrics = useFilteredAndSortedMetrics(
     classMetrics,
     searchQuery,
     sortMetric
   );
+
+  // Loading state
+  if (status === 'loading') {
+    return (
+      <div className="flex flex-col items-center justify-center py-20 gap-4">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+        <p className="theme-text-muted text-sm">Loading classification report...</p>
+      </div>
+    );
+  }
+
+  // Error state
+  if (status === 'error') {
+    return (
+      <div className="flex flex-col items-center justify-center py-20 gap-4">
+        <AlertCircle className="w-12 h-12 text-red-500" />
+        <p className="theme-text font-semibold">Failed to load report</p>
+        <p className="theme-text-muted text-sm">{error?.message}</p>
+        <button
+          onClick={refresh}
+          className="mt-2 px-6 py-2 rounded-full bg-primary text-white font-semibold text-sm hover:bg-primary/90 transition-colors"
+        >
+          Retry
+        </button>
+      </div>
+    );
+  }
+
+  // No data state
+  if (!overallMetrics) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20 gap-4">
+        <p className="theme-text-muted text-sm">No classification data available</p>
+      </div>
+    );
+  }
 
   return (
     <div className="flex flex-col gap-6">
@@ -169,9 +219,6 @@ const ClassificationReport: React.FC<ClassificationReportProps> = ({
             <span className="text-3xl font-bold theme-text">
               {formatMetric(overallMetrics.accuracy, true)}
             </span>
-            <span className="text-emerald-500 text-sm font-medium mb-1 flex items-center">
-              <TrendingUp className="w-4 h-4" /> +2.4%
-            </span>
           </div>
         </div>
 
@@ -184,8 +231,17 @@ const ClassificationReport: React.FC<ClassificationReportProps> = ({
             <span className="text-3xl font-bold theme-text">
               {formatMetric(overallMetrics.macroF1)}
             </span>
-            <span className="text-emerald-500 text-sm font-medium mb-1 flex items-center">
-              <TrendingUp className="w-4 h-4" /> +0.05
+          </div>
+        </div>
+
+        {/* Macro Precision */}
+        <div className="theme-surface theme-border border p-5 rounded-2xl shadow-sm flex flex-col gap-2">
+          <span className="theme-text-muted text-xs font-bold uppercase tracking-wider">
+            Macro Precision
+          </span>
+          <div className="flex items-end gap-2">
+            <span className="text-3xl font-bold theme-text">
+              {formatMetric(overallMetrics.macroPrecision)}
             </span>
           </div>
         </div>
@@ -200,21 +256,6 @@ const ClassificationReport: React.FC<ClassificationReportProps> = ({
               {formatSupport(overallMetrics.totalSupport)}
             </span>
             <span className="theme-text-muted text-sm font-medium mb-1">samples</span>
-          </div>
-        </div>
-
-        {/* Model Version */}
-        <div className="theme-surface theme-border border p-5 rounded-2xl shadow-sm flex flex-col gap-2">
-          <span className="theme-text-muted text-xs font-bold uppercase tracking-wider">
-            Model Version
-          </span>
-          <div className="flex items-end gap-2">
-            <span className="text-3xl font-bold theme-text">
-              {overallMetrics.modelVersion}
-            </span>
-            <span className="theme-text-muted text-sm font-medium mb-1 theme-bg-secondary px-2 py-0.5 rounded text-[10px]">
-              STABLE
-            </span>
           </div>
         </div>
       </div>
@@ -251,58 +292,57 @@ const ClassificationReport: React.FC<ClassificationReportProps> = ({
                     </p>
                   </td>
                 </tr>
-              ) : displayedMetrics.map((item) => (
-                <tr
-                  key={item.condition}
-                  className="group hover:bg-slate-800/30 transition-colors"
-                >
-                  {/* Condition Name */}
-                  <td className="py-4 px-6">
-                    <div className="flex flex-col">
+              ) : (
+                displayedMetrics.map((item) => (
+                  <tr
+                    key={item.condition}
+                    className="group hover:bg-slate-800/30 transition-colors"
+                  >
+                    {/* Condition Name */}
+                    <td className="py-4 px-6">
                       <span className="font-bold theme-text">{item.condition}</span>
-                      <span className="text-xs theme-text-muted">{item.category}</span>
-                    </div>
-                  </td>
+                    </td>
 
-                  {/* Precision */}
-                  <td className="py-3 px-4">
-                    <div className="h-full w-full flex items-center justify-center">
-                      <div
-                        className={`w-full max-w-[120px] rounded-lg px-3 py-1.5 text-center text-sm font-bold border ${getMetricColorClasses(item.precision)}`}
-                      >
-                        {formatMetric(item.precision, true)}
+                    {/* Precision */}
+                    <td className="py-3 px-4">
+                      <div className="h-full w-full flex items-center justify-center">
+                        <div
+                          className={`w-full max-w-[120px] rounded-lg px-3 py-1.5 text-center text-sm font-bold border ${getMetricColorClasses(item.precision)}`}
+                        >
+                          {formatMetric(item.precision, true)}
+                        </div>
                       </div>
-                    </div>
-                  </td>
+                    </td>
 
-                  {/* Recall */}
-                  <td className="py-3 px-4">
-                    <div className="h-full w-full flex items-center justify-center">
-                      <div
-                        className={`w-full max-w-[120px] rounded-lg px-3 py-1.5 text-center text-sm font-bold border ${getMetricColorClasses(item.recall)}`}
-                      >
-                        {formatMetric(item.recall, true)}
+                    {/* Recall */}
+                    <td className="py-3 px-4">
+                      <div className="h-full w-full flex items-center justify-center">
+                        <div
+                          className={`w-full max-w-[120px] rounded-lg px-3 py-1.5 text-center text-sm font-bold border ${getMetricColorClasses(item.recall)}`}
+                        >
+                          {formatMetric(item.recall, true)}
+                        </div>
                       </div>
-                    </div>
-                  </td>
+                    </td>
 
-                  {/* F1-Score */}
-                  <td className="py-3 px-4">
-                    <div className="h-full w-full flex items-center justify-center">
-                      <div
-                        className={`w-full max-w-[120px] rounded-lg px-3 py-1.5 text-center text-sm font-bold border ${getMetricColorClasses(item.f1Score)}`}
-                      >
-                        {formatMetric(item.f1Score)}
+                    {/* F1-Score */}
+                    <td className="py-3 px-4">
+                      <div className="h-full w-full flex items-center justify-center">
+                        <div
+                          className={`w-full max-w-[120px] rounded-lg px-3 py-1.5 text-center text-sm font-bold border ${getMetricColorClasses(item.f1Score)}`}
+                        >
+                          {formatMetric(item.f1Score)}
+                        </div>
                       </div>
-                    </div>
-                  </td>
+                    </td>
 
-                  {/* Support */}
-                  <td className="py-4 px-6 text-right text-sm theme-text-muted font-mono">
-                    {formatSupport(item.support)}
-                  </td>
-                </tr>
-              ))}
+                    {/* Support */}
+                    <td className="py-4 px-6 text-right text-sm theme-text-muted font-mono">
+                      {formatSupport(item.support)}
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>

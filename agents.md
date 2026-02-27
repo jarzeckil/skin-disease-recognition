@@ -360,6 +360,77 @@ export interface ModelInfoResponse {
 }
 ```
 
+### 5.3 GET /report
+
+**Request:**
+```
+GET /report
+(brak body)
+```
+
+**Response (200 OK):**
+```typescript
+interface ClassMetricsData {
+  precision: number;
+  recall: number;
+  'f1-score': number;
+  support: number;
+}
+
+interface ClassificationReportResponse {
+  [className: string]: ClassMetricsData;
+  // Zawiera rowniez klucze specjalne:
+  // 'accuracy': number
+  // 'macro avg': ClassMetricsData
+  // 'weighted avg': ClassMetricsData
+}
+```
+
+```json
+{
+  "Acne": {
+    "precision": 0.897,
+    "recall": 0.938,
+    "f1-score": 0.917,
+    "support": 65.0
+  },
+  "Eczema": {
+    "precision": 0.766,
+    "recall": 0.759,
+    "f1-score": 0.762,
+    "support": 112.0
+  },
+  "accuracy": 0.806,
+  "macro avg": {
+    "precision": 0.783,
+    "recall": 0.783,
+    "f1-score": 0.781,
+    "support": 1546.0
+  },
+  "weighted avg": {
+    "precision": 0.808,
+    "recall": 0.806,
+    "f1-score": 0.805,
+    "support": 1546.0
+  }
+}
+```
+
+**Typy TypeScript:**
+```typescript
+// types/api.ts
+export interface ClassMetricsData {
+  precision: number;
+  recall: number;
+  'f1-score': number;
+  support: number;
+}
+
+export interface ClassificationReportResponse {
+  [className: string]: ClassMetricsData;
+}
+```
+
 ---
 
 ## 6. Obsluga Stanow i Bledow
@@ -590,6 +661,7 @@ const ImageUploader: React.FC<Props> = ({ ... }) => {
 |----------|--------|------|
 | `/predict` | POST | Klasyfikacja obrazu choroby skory |
 | `/info` | GET | Informacje o modelu i metryki |
+| `/report` | GET | Classification report - metryki per klasa |
 
 ### 9.3 Dockerfile (do rozszerzenia o frontend)
 - **Plik:** `Dockerfile`

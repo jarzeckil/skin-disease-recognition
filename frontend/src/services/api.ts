@@ -4,7 +4,7 @@
  * Based on contracts defined in agents.md
  */
 
-import type { PredictionResponse, ModelInfoResponse } from '../types/api';
+import type { PredictionResponse, ModelInfoResponse, ClassificationReportResponse } from '../types/api';
 
 /**
  * Send image for skin disease prediction
@@ -40,6 +40,23 @@ export const getModelInfo = async (): Promise<ModelInfoResponse> => {
   if (!response.ok) {
     const errorText = await response.text().catch(() => 'Unknown error');
     throw new Error(`Failed to fetch model info (${response.status}): ${errorText}`);
+  }
+
+  return response.json();
+};
+
+/**
+ * Get classification report with per-class metrics
+ * @returns Classification report with precision, recall, f1-score per class
+ */
+export const getClassificationReport = async (): Promise<ClassificationReportResponse> => {
+  const response = await fetch('/api/report', {
+    method: 'GET',
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text().catch(() => 'Unknown error');
+    throw new Error(`Failed to fetch classification report (${response.status}): ${errorText}`);
   }
 
   return response.json();
