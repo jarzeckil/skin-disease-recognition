@@ -35,7 +35,7 @@ metrics = client.get_run(run_id).data.to_dictionary()['metrics']
 
 model_name = model_data['model_name']
 
-path = DEST_DIR / model_name
+path = DEST_DIR / (model_name + f'v{latest_version_info.version}')
 os.mkdir(path)
 
 torch.save(model, path / 'model.pth')
