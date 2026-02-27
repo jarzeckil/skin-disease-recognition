@@ -15,8 +15,13 @@ export interface ModelMetrics {
   precision: number;
 }
 
-export interface ModelInfoResponse {
+export interface ModelInfo {
   model_name: string;
+  model_version: string;
+}
+
+export interface ModelInfoResponse {
+  model_info: ModelInfo;
   metrics: ModelMetrics;
 }
 

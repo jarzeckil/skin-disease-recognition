@@ -223,7 +223,8 @@ const App: React.FC = () => {
 
       <MetricsDisplay
         metrics={modelInfo.data?.metrics}
-        modelName={modelInfo.data?.model_name}
+        modelName={modelInfo.data?.model_info.model_name}
+        modelVersion={modelInfo.data?.model_info.model_version}
         isLoading={modelInfo.status === 'loading'}
       />
     </div>

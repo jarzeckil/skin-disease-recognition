@@ -68,11 +68,11 @@ const MOCK_OVERALL_METRICS: OverallMetrics = {
  * Get color classes based on metric value (heatmap coloring)
  */
 const getMetricColorClasses = (value: number): string => {
-  if (value >= 0.90) {
+  if (value >= 0.85) {
     return 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30';
-  } else if (value >= 0.80) {
+  } else if (value >= 0.75) {
     return 'bg-yellow-500/10 text-yellow-400 border-yellow-500/30';
-  } else if (value >= 0.70) {
+  } else if (value >= 0.65) {
     return 'bg-orange-500/10 text-orange-400 border-orange-500/30';
   } else {
     return 'bg-red-500/10 text-red-400 border-red-500/30';
@@ -313,19 +313,19 @@ const ClassificationReport: React.FC<ClassificationReportProps> = ({
         <span className="font-semibold">Metric Scale:</span>
         <div className="flex items-center gap-2">
           <div className="w-4 h-4 rounded bg-emerald-500/20 border border-emerald-500/30" />
-          <span>Excellent (90%+)</span>
+          <span>Excellent (85%+)</span>
         </div>
         <div className="flex items-center gap-2">
           <div className="w-4 h-4 rounded bg-yellow-500/20 border border-yellow-500/30" />
-          <span>Good (80-89%)</span>
+          <span>Good (75-84%)</span>
         </div>
         <div className="flex items-center gap-2">
           <div className="w-4 h-4 rounded bg-orange-500/20 border border-orange-500/30" />
-          <span>Fair (70-79%)</span>
+          <span>Fair (65-74%)</span>
         </div>
         <div className="flex items-center gap-2">
           <div className="w-4 h-4 rounded bg-red-500/20 border border-red-500/30" />
-          <span>Poor (&lt;70%)</span>
+          <span>Poor (&lt;65%)</span>
         </div>
       </div>
     </div>
