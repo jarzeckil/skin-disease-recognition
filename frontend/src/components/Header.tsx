@@ -34,7 +34,7 @@ const Header: React.FC<HeaderProps> = ({ isDark, onToggleTheme }) => {
 
         {/* User avatar placeholder */}
         <div className="h-10 w-10 rounded-full border-2 border-primary overflow-hidden theme-surface flex items-center justify-center">
-          <span className="text-sm font-bold theme-text-muted">DR</span>
+          <span className="text-sm font-bold theme-text-muted"></span>
         </div>
       </div>
     </header>

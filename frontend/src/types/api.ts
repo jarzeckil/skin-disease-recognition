@@ -8,16 +8,21 @@ export interface PredictionResponse {
 }
 
 // GET /info response
-export interface ModelMetrics {
-  f1: number;
-  accuracy: number;
-  recall: number;
-  precision: number;
-}
-
 export interface ModelInfoResponse {
   model_name: string;
-  metrics: ModelMetrics;
+  model_version: string;
+}
+
+// GET /report response
+export interface ClassMetricsData {
+  precision: number;
+  recall: number;
+  'f1-score': number;
+  support: number;
+}
+
+export interface ClassificationReportResponse {
+  [className: string]: ClassMetricsData;
 }
 
 // Request status for API calls

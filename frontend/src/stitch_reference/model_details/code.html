@@ -1,0 +1,450 @@
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Unified Heatmap Metrics Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#2b7cee",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#0f172a","surface-dark": "#1e293b","surface-highlight": "#334155",
+                        "accent-blue": "#3b82f6",
+                        "accent-cyan": "#06b6d4",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 font-display overflow-hidden">
+<div class="flex h-screen w-full flex-row overflow-hidden">
+<aside class="flex w-72 flex-col justify-between border-r border-slate-200 dark:border-slate-800 bg-background-light dark:bg-background-dark p-6 overflow-y-auto">
+<div class="flex flex-col gap-8">
+<div class="flex items-center gap-3">
+<div class="bg-center bg-no-repeat bg-cover rounded-full h-10 w-10 relative overflow-hidden bg-gradient-to-br from-primary to-accent-cyan shadow-lg shadow-primary/20" data-alt="Abstract blue gradient logo"></div>
+<div class="flex flex-col">
+<h1 class="text-slate-900 dark:text-white text-lg font-bold leading-tight" style="">DermAI Assist</h1>
+<p class="text-slate-500 dark:text-slate-400 text-xs font-medium" style=""><br></p>
+</div>
+</div>
+<nav class="flex flex-col gap-2">
+<a class="flex items-center gap-3 px-4 py-3 rounded-full text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors" href="#" style="">
+<span class="material-symbols-outlined" style="">dashboard</span>
+<span class="text-sm font-semibold" style="">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-full bg-primary text-white shadow-md shadow-primary/30" href="#" style="">
+<span class="material-symbols-outlined fill-1" style="">smart_toy</span>
+<span class="text-sm font-semibold" style="">Models</span>
+</a>
+</nav>
+<div class="flex flex-col gap-4 pt-6 border-t border-slate-200 dark:border-slate-800">
+<p class="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500" style="">View Controls</p>
+<div class="flex flex-col gap-2">
+<label class="text-xs font-medium text-slate-500 dark:text-slate-400" style="">Filter Conditions</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[20px]" style="">search</span>
+<input class="w-full bg-slate-200 dark:bg-surface-dark border-none rounded-full py-2.5 pl-10 pr-4 text-sm text-slate-900 dark:text-white placeholder-slate-500 focus:ring-2 focus:ring-primary focus:outline-none" placeholder="Search..." type="text">
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<label class="text-xs font-medium text-slate-500 dark:text-slate-400" style="">Sort Metric</label>
+<div class="relative">
+<select class="w-full appearance-none bg-slate-200 dark:bg-surface-dark border-none rounded-full py-2.5 pl-4 pr-10 text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-primary focus:outline-none cursor-pointer">
+<option>F1-Score (High to Low)</option>
+<option>Precision</option>
+<option>Recall</option>
+<option>Alphabetical</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-[20px]" style="">arrow_drop_down</span>
+</div>
+</div>
+</div>
+</div>
+</aside>
+<main class="flex-1 flex flex-col h-full bg-background-light dark:bg-[#0b1120] relative overflow-hidden">
+<header class="flex-none px-8 py-6 flex flex-col gap-1">
+<div class="flex items-center justify-between">
+<div>
+<h2 class="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight" style="">Model Performance</h2>
+<p class="text-slate-500 dark:text-slate-400 mt-1" style="">Classification Report &amp; Heatmap Analysis</p>
+</div>
+<div class="flex gap-3">
+</div>
+</div>
+</header>
+<div class="flex-1 overflow-y-auto px-8 pb-8 custom-scrollbar">
+<div class="grid grid-cols-1 gap-6">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-2">
+<div class="bg-white dark:bg-surface-dark p-5 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm flex flex-col gap-2">
+<span class="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider" style="">Overall Accuracy</span>
+<div class="flex items-end gap-2">
+<span class="text-3xl font-bold text-slate-900 dark:text-white" style="">94.8%</span>
+<span class="text-emerald-500 text-sm font-medium mb-1 flex items-center" style="">
+<span class="material-symbols-outlined text-[16px]" style="">trending_up</span> +2.4%
+                                </span>
+</div>
+</div>
+<div class="bg-white dark:bg-surface-dark p-5 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm flex flex-col gap-2">
+<span class="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider" style="">Macro Avg F1</span>
+<div class="flex items-end gap-2">
+<span class="text-3xl font-bold text-slate-900 dark:text-white" style="">0.92</span>
+<span class="text-emerald-500 text-sm font-medium mb-1 flex items-center" style="">
+<span class="material-symbols-outlined text-[16px]" style="">trending_up</span> +0.05
+                                </span>
+</div>
+</div>
+<div class="bg-white dark:bg-surface-dark p-5 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm flex flex-col gap-2">
+<span class="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider" style="">Total Support</span>
+<div class="flex items-end gap-2">
+<span class="text-3xl font-bold text-slate-900 dark:text-white" style="">12,840</span>
+<span class="text-slate-500 text-sm font-medium mb-1" style="">samples</span>
+</div>
+</div>
+<div class="bg-white dark:bg-surface-dark p-5 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm flex flex-col gap-2">
+<span class="text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider" style="">Model Version</span>
+<div class="flex items-end gap-2">
+<span class="text-3xl font-bold text-slate-900 dark:text-white" style="">v2.4.1</span>
+<span class="text-slate-500 text-sm font-medium mb-1 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded text-[10px]" style="">BETA</span>
+</div>
+</div>
+</div>
+<div class="bg-white dark:bg-surface-dark rounded-3xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-xl shadow-black/5">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead class="bg-slate-50 dark:bg-[#151e2e] border-b border-slate-200 dark:border-slate-700">
+<tr>
+<th class="py-4 px-6 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 w-1/4" style="">Condition</th>
+<th class="py-4 px-6 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 w-1/6 text-center" style="">Precision</th>
+<th class="py-4 px-6 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 w-1/6 text-center" style="">Recall</th>
+<th class="py-4 px-6 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 w-1/6 text-center" style="">F1-Score</th>
+<th class="py-4 px-6 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 w-1/6 text-right" style="">Support</th>
+<th class="py-4 px-6 text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 w-12" style=""></th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-100 dark:divide-slate-800">
+<tr class="group hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+<td class="py-4 px-6" style="">
+<div class="flex flex-col">
+<span class="font-bold text-slate-900 dark:text-white" style="">Melanoma</span>
+<span class="text-xs text-slate-500" style="">Malignant</span>
+</div>
+</td>
+<td class="py-3 px-4" style="">
+<div class="h-full w-full flex items-center justify-center">
+<div class="w-full max-w-[120px] bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 rounded-lg px-3 py-1.5 text-center text-sm font-bold border border-emerald-200 dark:border-emerald-500/30" style="">
+                                                    92%
+                                                </div>
+</div>
+</td>
+<td class="py-3 px-4" style="">
+<div class="h-full w-full flex items-center justify-center">
+<div class="w-full max-w-[120px] bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 rounded-lg px-3 py-1.5 text-center text-sm font-bold border border-emerald-200 dark:border-emerald-500/30" style="">
+                                                    88%
+                                                </div>
+</div>
+</td>
+<td class="py-3 px-4" style="">
+<div class="h-full w-full flex items-center justify-center">
+<div class="w-full max-w-[120px] bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 rounded-lg px-3 py-1.5 text-center text-sm font-bold border border-emerald-200 dark:border-emerald-500/30" style="">
+                                                    0.90
+                                                </div>
+</div>
+</td>
+<td class="py-4 px-6 text-right text-sm text-slate-500 dark:text-slate-400 font-mono" style="">1,240</td>
+<td class="py-4 px-6 text-center" style="">
+<button class="text-slate-400 hover:text-primary dark:hover:text-white transition" style="">
+<span class="material-symbols-outlined text-[20px]" style="">more_vert</span>
+</button>
+</td>
+</tr>
+<tr class="group hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+<td class="py-4 px-6" style="">
+<div class="flex flex-col">
+<span class="font-bold text-slate-900 dark:text-white" style="">Basal Cell Carcinoma</span>
+<span class="text-xs text-slate-500" style="">Malignant</span>
+</div>
+</td>
+<td class="py-3 px-4" style="">
+<div class="h-full w-full flex items-center justify-center">
+<div class="w-full max-w-[120px] bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 rounded-lg px-3 py-1.5 text-center text-sm font-bold border border-emerald-200 dark:border-emerald-500/30" style="">
+                                                    95%
+                                                </div>
+</div>
+</td>
+<td class="py-3 px-4" style="">
+<div class="h-full w-full flex items-center justify-center">
+<div class="w-full max-w-[120px] bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 rounded-lg px-3 py-1.5 text-center text-sm font-bold border border-emerald-200 dark:border-emerald-500/30" style="">
+                                                    94%
+                                                </div>
+</div>
+</td>
+<td class="py-3 px-4" style="">
+<div class="h-full w-full flex items-center justify-center">
+<div class="w-full max-w-[120px] bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 rounded-lg px-3 py-1.5 text-center text-sm font-bold border border-emerald-200 dark:border-emerald-500/30" style="">
+                                                    0.94
+                                                </div>
+</div>
+</td>
+<td class="py-4 px-6 text-right text-sm text-slate-500 dark:text-slate-400 font-mono" style="">3,100</td>
+<td class="py-4 px-6 text-center" style="">
+<button class="text-slate-400 hover:text-primary dark:hover:text-white transition" style="">
+<span class="material-symbols-outlined text-[20px]" style="">more_vert</span>
+</button>
+</td>
+</tr>
+<tr class="group hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+<td class="py-4 px-6" style="">
+<div class="flex flex-col">
+<span class="font-bold text-slate-900 dark:text-white" style="">Squamous Cell Carcinoma</span>
+<span class="text-xs text-slate-500" style="">Malignant</span>
+</div>
+</td>
+<td class="py-3 px-4" style="">
+<div class="h-full w-full flex items-center justify-center">
+<div class="w-full max-w-[120px] bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 rounded-lg px-3 py-1.5 text-center text-sm font-bold border border-emerald-200 dark:border-emerald-500/30" style="">
+                                                    89%
+                                                </div>
+</div>
+</td>
+<td class="py-3 px-4" style="">
+<div class="h-full w-full flex items-center justify-center">
+<div class="w-full max-w-[120px] bg-yellow-500/10 dark:bg-yellow-500/20 text-yellow-700 dark:text-yellow-400 rounded-lg px-3 py-1.5 text-center text-sm font-bold border border-yellow-200 dark:border-yellow-500/30" style="">
+                                                    85%
+                                                </div>
+</div>
+</td>
+<td class="py-3 px-4" style="">
+<div class="h-full w-full flex items-center justify-center">
+<div class="w-full max-w-[120px] bg-yellow-500/10 dark:bg-yellow-500/20 text-yellow-700 dark:text-yellow-400 rounded-lg px-3 py-1.5 text-center text-sm font-bold border border-yellow-200 dark:border-yellow-500/30" style="">
+                                                    0.87
+                                                </div>
+</div>
+</td>
+<td class="py-4 px-6 text-right text-sm text-slate-500 dark:text-slate-400 font-mono" style="">980</td>
+<td class="py-4 px-6 text-center" style="">
+<button class="text-slate-400 hover:text-primary dark:hover:text-white transition" style="">
+<span class="material-symbols-outlined text-[20px]" style="">more_vert</span>
+</button>
+</td>
+</tr>
+<tr class="group hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+<td class="py-4 px-6" style="">
+<div class="flex flex-col">
+<span class="font-bold text-slate-900 dark:text-white" style="">Actinic Keratosis</span>
+<span class="text-xs text-slate-500" style="">Pre-malignant</span>
+</div>
+</td>
+<td class="py-3 px-4" style="">
+<div class="h-full w-full flex items-center justify-center">
+<div class="w-full max-w-[120px] bg-yellow-500/10 dark:bg-yellow-500/20 text-yellow-700 dark:text-yellow-400 rounded-lg px-3 py-1.5 text-center text-sm font-bold border border-yellow-200 dark:border-yellow-500/30" style="">
+                                                    82%
+                                                </div>
+</div>
+</td>
+<td class="py-3 px-4" style="">
+<div class="h-full w-full flex items-center justify-center">
+<div class="w-full max-w-[120px] bg-orange-500/10 dark:bg-orange-500/20 text-orange-700 dark:text-orange-400 rounded-lg px-3 py-1.5 text-center text-sm font-bold border border-orange-200 dark:border-orange-500/30" style="">
+                                                    79%
+                                                </div>
+</div>
+</td>
+<td class="py-3 px-4" style="">
+<div class="h-full w-full flex items-center justify-center">
+<div class="w-full max-w-[120px] bg-yellow-500/10 dark:bg-yellow-500/20 text-yellow-700 dark:text-yellow-400 rounded-lg px-3 py-1.5 text-center text-sm font-bold border border-yellow-200 dark:border-yellow-500/30" style="">
+                                                    0.80
+                                                </div>
+</div>
+</td>
+<td class="py-4 px-6 text-right text-sm text-slate-500 dark:text-slate-400 font-mono" style="">540</td>
+<td class="py-4 px-6 text-center" style="">
+<button class="text-slate-400 hover:text-primary dark:hover:text-white transition" style="">
+<span class="material-symbols-outlined text-[20px]" style="">more_vert</span>
+</button>
+</td>
+</tr>
+<tr class="group hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+<td class="py-4 px-6" style="">
+<div class="flex flex-col">
+<span class="font-bold text-slate-900 dark:text-white" style="">Seborrheic Keratosis</span>
+<span class="text-xs text-slate-500" style="">Benign</span>
+</div>
+</td>
+<td class="py-3 px-4" style="">
+<div class="h-full w-full flex items-center justify-center">
+<div class="w-full max-w-[120px] bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 rounded-lg px-3 py-1.5 text-center text-sm font-bold border border-emerald-200 dark:border-emerald-500/30" style="">
+                                                    91%
+                                                </div>
+</div>
+</td>
+<td class="py-3 px-4" style="">
+<div class="h-full w-full flex items-center justify-center">
+<div class="w-full max-w-[120px] bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 rounded-lg px-3 py-1.5 text-center text-sm font-bold border border-emerald-200 dark:border-emerald-500/30" style="">
+                                                    93%
+                                                </div>
+</div>
+</td>
+<td class="py-3 px-4" style="">
+<div class="h-full w-full flex items-center justify-center">
+<div class="w-full max-w-[120px] bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 rounded-lg px-3 py-1.5 text-center text-sm font-bold border border-emerald-200 dark:border-emerald-500/30" style="">
+                                                    0.92
+                                                </div>
+</div>
+</td>
+<td class="py-4 px-6 text-right text-sm text-slate-500 dark:text-slate-400 font-mono" style="">1,150</td>
+<td class="py-4 px-6 text-center" style="">
+<button class="text-slate-400 hover:text-primary dark:hover:text-white transition" style="">
+<span class="material-symbols-outlined text-[20px]" style="">more_vert</span>
+</button>
+</td>
+</tr>
+<tr class="group hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+<td class="py-4 px-6" style="">
+<div class="flex flex-col">
+<span class="font-bold text-slate-900 dark:text-white" style="">Dermatofibroma</span>
+<span class="text-xs text-slate-500" style="">Benign</span>
+</div>
+</td>
+<td class="py-3 px-4" style="">
+<div class="h-full w-full flex items-center justify-center">
+<div class="w-full max-w-[120px] bg-orange-500/10 dark:bg-orange-500/20 text-orange-700 dark:text-orange-400 rounded-lg px-3 py-1.5 text-center text-sm font-bold border border-orange-200 dark:border-orange-500/30" style="">
+                                                    76%
+                                                </div>
+</div>
+</td>
+<td class="py-3 px-4" style="">
+<div class="h-full w-full flex items-center justify-center">
+<div class="w-full max-w-[120px] bg-red-500/10 dark:bg-red-500/20 text-red-700 dark:text-red-400 rounded-lg px-3 py-1.5 text-center text-sm font-bold border border-red-200 dark:border-red-500/30" style="">
+                                                    72%
+                                                </div>
+</div>
+</td>
+<td class="py-3 px-4" style="">
+<div class="h-full w-full flex items-center justify-center">
+<div class="w-full max-w-[120px] bg-red-500/10 dark:bg-red-500/20 text-red-700 dark:text-red-400 rounded-lg px-3 py-1.5 text-center text-sm font-bold border border-red-200 dark:border-red-500/30" style="">
+                                                    0.74
+                                                </div>
+</div>
+</td>
+<td class="py-4 px-6 text-right text-sm text-slate-500 dark:text-slate-400 font-mono" style="">210</td>
+<td class="py-4 px-6 text-center" style="">
+<button class="text-slate-400 hover:text-primary dark:hover:text-white transition" style="">
+<span class="material-symbols-outlined text-[20px]" style="">more_vert</span>
+</button>
+</td>
+</tr>
+<tr class="group hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+<td class="py-4 px-6" style="">
+<div class="flex flex-col">
+<span class="font-bold text-slate-900 dark:text-white" style="">Vascular Lesion</span>
+<span class="text-xs text-slate-500" style="">Benign</span>
+</div>
+</td>
+<td class="py-3 px-4" style="">
+<div class="h-full w-full flex items-center justify-center">
+<div class="w-full max-w-[120px] bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 rounded-lg px-3 py-1.5 text-center text-sm font-bold border border-emerald-200 dark:border-emerald-500/30" style="">
+                                                    88%
+                                                </div>
+</div>
+</td>
+<td class="py-3 px-4" style="">
+<div class="h-full w-full flex items-center justify-center">
+<div class="w-full max-w-[120px] bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 rounded-lg px-3 py-1.5 text-center text-sm font-bold border border-emerald-200 dark:border-emerald-500/30" style="">
+                                                    90%
+                                                </div>
+</div>
+</td>
+<td class="py-3 px-4" style="">
+<div class="h-full w-full flex items-center justify-center">
+<div class="w-full max-w-[120px] bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 rounded-lg px-3 py-1.5 text-center text-sm font-bold border border-emerald-200 dark:border-emerald-500/30" style="">
+                                                    0.89
+                                                </div>
+</div>
+</td>
+<td class="py-4 px-6 text-right text-sm text-slate-500 dark:text-slate-400 font-mono" style="">320</td>
+<td class="py-4 px-6 text-center" style="">
+<button class="text-slate-400 hover:text-primary dark:hover:text-white transition" style="">
+<span class="material-symbols-outlined text-[20px]" style="">more_vert</span>
+</button>
+</td>
+</tr>
+<tr class="group hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+<td class="py-4 px-6" style="">
+<div class="flex flex-col">
+<span class="font-bold text-slate-900 dark:text-white" style="">Nevus</span>
+<span class="text-xs text-slate-500" style="">Benign</span>
+</div>
+</td>
+<td class="py-3 px-4" style="">
+<div class="h-full w-full flex items-center justify-center">
+<div class="w-full max-w-[120px] bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 rounded-lg px-3 py-1.5 text-center text-sm font-bold border border-emerald-200 dark:border-emerald-500/30" style="">
+                                                    96%
+                                                </div>
+</div>
+</td>
+<td class="py-3 px-4" style="">
+<div class="h-full w-full flex items-center justify-center">
+<div class="w-full max-w-[120px] bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 rounded-lg px-3 py-1.5 text-center text-sm font-bold border border-emerald-200 dark:border-emerald-500/30" style="">
+                                                    97%
+                                                </div>
+</div>
+</td>
+<td class="py-3 px-4" style="">
+<div class="h-full w-full flex items-center justify-center">
+<div class="w-full max-w-[120px] bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 rounded-lg px-3 py-1.5 text-center text-sm font-bold border border-emerald-200 dark:border-emerald-500/30" style="">
+                                                    0.96
+                                                </div>
+</div>
+</td>
+<td class="py-4 px-6 text-right text-sm text-slate-500 dark:text-slate-400 font-mono" style="">5,600</td>
+<td class="py-4 px-6 text-center" style="">
+<button class="text-slate-400 hover:text-primary dark:hover:text-white transition" style="">
+<span class="material-symbols-outlined text-[20px]" style="">more_vert</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+<footer class="flex-none py-4 px-8 border-t border-slate-200 dark:border-slate-800 bg-background-light dark:bg-background-dark/50">
+<div class="flex flex-col lg:flex-row justify-between items-center text-xs text-slate-500 dark:text-slate-500 gap-3">
+<div class="flex flex-col sm:flex-row gap-2 sm:gap-6 items-center">
+<span class="font-mono text-[10px] tracking-wider opacity-70" style="">F1: 0.92</span>
+<span class="font-mono text-[10px] tracking-wider opacity-70" style="">ACC: 94.8%</span>
+<span class="font-mono text-[10px] tracking-wider opacity-70" style="">REC: 0.90</span>
+<span class="font-mono text-[10px] tracking-wider opacity-70" style="">PREC: 0.94</span>
+</div>
+<p class="text-center lg:text-right max-w-2xl opacity-60 text-[10px] leading-relaxed" style="">Disclaimer: This tool is for research and educational purposes only and does not constitute medical advice. Consult a healthcare professional for diagnosis. <a class="hover:text-primary transition underline ml-2" href="https://github.com/skindx-ai" style="" target="_blank">GitHub</a></p>
+</div>
+</footer>
+</main>
+</div>
+<style>.custom-scrollbar::-webkit-scrollbar {
+            width: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background-color: #334155;
+            border-radius: 20px;
+            border: 3px solid transparent;
+            background-clip: content-box;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background-color: #475569;
+        }
+    </style>
+</body></html>

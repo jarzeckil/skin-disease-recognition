@@ -34,12 +34,7 @@ interface DiagnosisReport {
   };
   modelInfo: {
     name: string;
-    metrics: {
-      f1Score: number;
-      accuracy: number;
-      recall: number;
-      precision: number;
-    };
+    version: string;
   } | null;
   disclaimer: string;
 }
@@ -81,12 +76,7 @@ const generateReport = (data: ExportReportData): DiagnosisReport => {
     modelInfo: modelInfo
       ? {
           name: modelInfo.model_name,
-          metrics: {
-            f1Score: modelInfo.metrics.f1,
-            accuracy: modelInfo.metrics.accuracy,
-            recall: modelInfo.metrics.recall,
-            precision: modelInfo.metrics.precision,
-          },
+          version: modelInfo.model_version,
         }
       : null,
     disclaimer:

@@ -23,6 +23,7 @@ artifacts = {}
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     device = ACTIVE_DEVICE
+    artifacts['device'] = device
     if device is None:
         raise ValueError('Active device name not found in .env')
 
@@ -33,9 +34,9 @@ async def lifespan(app: FastAPI):
     model_folder = os.path.join(model_storage, model_name)
 
     model_path = os.path.join(model_folder, 'model.pth')
-    metrics_path = os.path.join(model_folder, 'metrics.json')
     data_path = os.path.join(model_folder, 'model_data.json')
     classnames_path = os.path.join(model_folder, 'class_names.txt')
+    classif_report_path = os.path.join(model_folder, 'classification_report.json')
 
     try:
         model: nn.Module = torch.load(
@@ -46,13 +47,6 @@ async def lifespan(app: FastAPI):
         logger.info('Model loaded successfully')
     except FileNotFoundError as e:
         raise ValueError('Model not found') from e
-
-    try:
-        with open(metrics_path) as f:
-            metrics = json.load(f)
-        artifacts['metrics'] = metrics
-    except FileNotFoundError as e:
-        raise ValueError('Metrics not found') from e
 
     try:
         with open(data_path) as f:
@@ -68,6 +62,13 @@ async def lifespan(app: FastAPI):
         artifacts['classes'] = classes
     except FileNotFoundError as e:
         raise ValueError('Class names not found') from e
+
+    try:
+        with open(classif_report_path) as f:
+            report_data = json.load(f)
+        artifacts['report'] = report_data
+    except FileNotFoundError as e:
+        raise ValueError('Metadata not found') from e
 
     transform = make_transform(artifacts['metadata']['image_size'])
     artifacts['transform'] = transform
@@ -85,10 +86,11 @@ async def predict(file: UploadFile):
     transform: A.Compose = artifacts['transform']
     model: nn.Module = artifacts['model']
     classes: list[str] = artifacts['classes']
+    device = artifacts['device']
 
     mat = await get_data_from_file(file)
     data: torch.Tensor = transform(image=mat)['image']
-    data = data.unsqueeze(0)
+    data = data.unsqueeze(0).to(device)
 
     with torch.no_grad():
         pred = model(data)
@@ -101,16 +103,16 @@ async def predict(file: UploadFile):
 
 @app.get('/info', status_code=status.HTTP_200_OK)
 async def info():
-    metr = artifacts['metrics']
-    model_name = artifacts['metadata']['model_name']
-
-    metr_response = {
-        'f1': metr['f1'],
-        'accuracy': metr['accuracy'],
-        'recall': metr['recall'],
-        'precision': metr['precision'],
+    model_info_response = {
+        'model_name': artifacts['metadata']['model_name'],
+        'model_version': artifacts['metadata']['version'],
     }
 
-    response = {'model_name': model_name, 'metrics': metr_response}
+    response = model_info_response
 
     return response
+
+
+@app.get('/report', status_code=status.HTTP_200_OK)
+async def report():
+    return artifacts['report']

@@ -25,26 +25,34 @@ print(
     f'(Model Version: {latest_version_info.version})'
 )
 
-model = mlflow.pyfunc.load_model(
-    f'models:/{MODEL_NAME}/{latest_version_info.version}'
-).get_raw_model()
+model = mlflow.pytorch.load_model(f'models:/{MODEL_NAME}/{latest_version_info.version}')
 model_data = ast.literal_eval(
     client.get_run(run_id).data.to_dictionary()['params']['model']
 )
-metrics = client.get_run(run_id).data.to_dictionary()['metrics']
 
 model_name = model_data['model_name']
 
-os.mkdir(DEST_DIR / model_name)
+path = DEST_DIR / (model_name + f'v{latest_version_info.version}')
+os.mkdir(path)
 
-torch.save(model, DEST_DIR / model_name / 'model.pth')
-print(f'Model saved to {DEST_DIR / model_name / "model.pth"}')
+torch.save(model, path / 'model.pth')
+print(f'Model saved to {path / "model.pth"}')
 
-with open(DEST_DIR / model_name / 'model_data.json', 'w') as f:
+model_data['version'] = latest_version_info.version
+with open(path / 'model_data.json', 'w') as f:
     json.dump(model_data, f)
-with open(DEST_DIR / model_name / 'metrics.json', 'w') as f:
-    json.dump(metrics, f)
 
-# TODO download class names from mlflow
+mlflow.artifacts.download_artifacts(
+    run_id=run_id, artifact_path='classification_report.json', dst_path=path
+)
+mlflow.artifacts.download_artifacts(
+    run_id=run_id, artifact_path='class_names.txt', dst_path=path
+)
+
+with open(path / 'classification_report.json') as f:
+    classif_report = json.load(f)
+metrics = classif_report['macro avg']
+with open(path / 'metrics.json', 'w') as f:
+    json.dump(metrics, f)
 
 print('Export complete.')

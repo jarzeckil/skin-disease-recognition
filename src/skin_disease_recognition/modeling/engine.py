@@ -1,3 +1,4 @@
+import json
 import logging
 import os
 from typing import Any, cast
@@ -208,10 +209,11 @@ class Trainer:
             mlflow.log_artifact(plot_path)
             logger.info('Low confidence misses plot logged to MLflow')
 
-        classif_report = classification_report(
-            y_true=y_trues, y_pred=y_preds, target_names=classes
+        classif_report: dict = classification_report(
+            y_true=y_trues, y_pred=y_preds, target_names=classes, output_dict=True
         )
-        mlflow.log_text(classif_report, 'classification_report.txt')
+        classif_report_json = json.dumps(classif_report)
+        mlflow.log_text(classif_report_json, 'classification_report.json')
         logger.info('Classification report logged to MLflow')
 
     def train(

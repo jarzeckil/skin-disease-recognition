@@ -1,87 +1,45 @@
-import { Github } from 'lucide-react';
-import type { ModelMetrics } from '../types/api';
+import { Github, Cpu } from 'lucide-react';
+import { useModelInfo } from '../hooks';
 
-interface MetricsDisplayProps {
-  metrics?: ModelMetrics;
-  modelName?: string;
-  modelVersion?: string;
-  isLoading?: boolean;
-}
+const MetricsDisplay: React.FC = () => {
+  const { status, data: modelInfo } = useModelInfo();
 
-// Mock data for UI development
-const MOCK_METRICS: ModelMetrics = {
-  f1: 0.92,
-  accuracy: 0.954,
-  recall: 0.91,
-  precision: 0.93,
-};
-
-const MetricsDisplay: React.FC<MetricsDisplayProps> = ({
-  metrics = MOCK_METRICS,
-  modelName = 'EFFICIENTNET-B0',
-  modelVersion = 'v1.0.0',
-  isLoading = false,
-}) => {
-  const formatMetric = (value: number, isPercentage = false): string => {
-    if (isPercentage) {
-      return `${(value * 100).toFixed(1)}%`;
+  // Format version: if it's a plain number, prefix with "v"
+  const formatVersion = (version: string | number): string => {
+    const versionStr = String(version);
+    // If it's just a number or doesn't start with 'v', add 'v' prefix
+    if (/^\d+$/.test(versionStr)) {
+      return `v${versionStr}`;
     }
-    return value.toFixed(2);
+    return versionStr;
   };
 
-  const metricItems = [
-    { label: 'F1 Score', value: formatMetric(metrics.f1) },
-    { label: 'Accuracy', value: formatMetric(metrics.accuracy, true) },
-    { label: 'Recall', value: formatMetric(metrics.recall) },
-    { label: 'Precision', value: formatMetric(metrics.precision) },
-  ];
-
   return (
-    <footer className="mt-auto border-t theme-border theme-bg-secondary py-8 transition-colors">
+    <footer className="mt-auto border-t theme-border theme-bg-secondary py-6 transition-colors">
       <div className="max-w-7xl mx-auto px-6 md:px-10">
-        <div className="flex flex-col gap-6">
-          {/* Metrics row */}
-          <div className="flex flex-wrap items-center justify-between gap-6">
-            {/* Metrics */}
-            <div className="flex gap-8">
-              {metricItems.map((item) => (
-                <div key={item.label} className="flex flex-col">
-                  <span className="text-[10px] uppercase tracking-wider theme-text-muted font-bold">
-                    {item.label}
-                  </span>
-                  {isLoading ? (
-                    <div className="h-5 w-12 theme-surface rounded animate-pulse mt-1" />
-                  ) : (
-                    <span className="text-sm font-semibold theme-text">
-                      {item.value}
-                    </span>
-                  )}
-                </div>
-              ))}
-            </div>
-
-            {/* Model info and links */}
-            <div className="flex items-center gap-6">
-              <div className="text-xs theme-text-muted flex items-center gap-2">
-                <span className="inline-block w-2 h-2 rounded-full bg-green-500" />
-                <span>
-                  {isLoading ? (
-                    <span className="inline-block h-4 w-32 theme-surface rounded animate-pulse" />
-                  ) : (
-                    <>Model: {modelName} ({modelVersion})</>
-                  )}
+        <div className="flex flex-col gap-4">
+          {/* Model info and links row */}
+          <div className="flex flex-wrap items-center justify-center gap-6">
+            {/* Model info */}
+            {status === 'success' && modelInfo && (
+              <div className="flex items-center gap-2 text-xs font-medium theme-text-muted">
+                <Cpu className="w-4 h-4" />
+                <span>{modelInfo.model_name}</span>
+                <span className="px-1.5 py-0.5 rounded bg-primary/10 text-primary text-[10px] font-bold">
+                  {formatVersion(modelInfo.model_version)}
                 </span>
               </div>
-              <a
-                href="https://github.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 text-xs font-medium theme-text-muted hover:text-primary transition-colors"
-              >
-                <Github className="w-4 h-4" />
-                Source on GitHub
-              </a>
-            </div>
+            )}
+
+            <a
+              href="https://github.com/jarzeckil/skin-disease-recognition"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 text-xs font-medium theme-text-muted hover:text-primary transition-colors"
+            >
+              <Github className="w-4 h-4" />
+              Source on GitHub
+            </a>
           </div>
 
           {/* Disclaimer */}

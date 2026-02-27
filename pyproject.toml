@@ -16,40 +16,34 @@ classifiers = [
     "License :: OSI Approved :: MIT License"
 ]
 dependencies = [
-    "albumentations>=2.0.8",
     "dvc>=3.66.1",
     "fastapi>=0.128.7",
     "hydra-core>=1.3.2",
-    "ipykernel>=7.1.0",
     "kagglehub>=0.4.2",
     "mlflow (>=3.7.0,<4.0.0)",
     "pandas (>=2.3.3,<3.0.0)",
     "pip",
-    "pre-commit>=4.5.1",
     "protobuf~=6.0",
-    "pytest",
     "python-dotenv",
     "python-multipart>=0.0.22",
-    "ruff",
     "scikit-learn>=1.8.0",
     "seaborn>=0.13.2",
-    "torchmetrics>=1.8.2",
     "uvicorn>=0.40.0",
 ]
 requires-python = "~=3.13.0"
 
 [tool.uv.sources]
-torch = { index = "pytorch" }
-torchvision = { index = "pytorch" }
+torch = { index = "pytorch-cuda" }
+torchvision = { index = "pytorch-cuda" }
 
 [[tool.uv.index]]
-name = "pytorch_cpu"
-url = "https://download.pytorch.org/whl/cpu"
+name = "pytorch-cuda"
+url = "https://download.pytorch.org/whl/cu130"
 explicit = true
 
 [[tool.uv.index]]
-name = "pytorch"
-url = "https://download.pytorch.org/whl/cu130"
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
 explicit = true
 
 [tool.ruff]
@@ -79,9 +73,12 @@ dev = [
     "pre-commit>=4.5.1",
     "pytest>=9.0.2",
     "ruff>=0.14.14",
+    "ipykernel>=7.1.0",
 ]
 pytorch = [
+    "albumentations>=2.0.8",
     "torch>=2.10.0",
+    "torchmetrics>=1.8.2",
     "torchvision>=0.25.0",
 ]
 

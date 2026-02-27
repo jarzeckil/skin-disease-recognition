@@ -312,23 +312,78 @@ GET /info
 ```typescript
 interface ModelInfoResponse {
   model_name: string;
-  metrics: {
-    f1: number;
-    accuracy: number;
-    recall: number;
-    precision: number;
-  };
+  model_version: string;
 }
 ```
 
 ```json
 {
   "model_name": "EFFICIENTNET-B0",
-  "metrics": {
-    "f1": 0.7818295955657959,
-    "accuracy": 0.8046571612358093,
-    "recall": 0.7854492664337158,
-    "precision": 0.7833981513977051
+  "model_version": "v1.0.0"
+}
+```
+
+**Typy TypeScript:**
+```typescript
+// types/api.ts
+export interface ModelInfoResponse {
+  model_name: string;
+  model_version: string;
+}
+```
+
+### 5.3 GET /report
+
+**Request:**
+```
+GET /report
+(brak body)
+```
+
+**Response (200 OK):**
+```typescript
+interface ClassMetricsData {
+  precision: number;
+  recall: number;
+  'f1-score': number;
+  support: number;
+}
+
+interface ClassificationReportResponse {
+  [className: string]: ClassMetricsData;
+  // Zawiera rowniez klucze specjalne:
+  // 'accuracy': number
+  // 'macro avg': ClassMetricsData
+  // 'weighted avg': ClassMetricsData
+}
+```
+
+```json
+{
+  "Acne": {
+    "precision": 0.897,
+    "recall": 0.938,
+    "f1-score": 0.917,
+    "support": 65.0
+  },
+  "Eczema": {
+    "precision": 0.766,
+    "recall": 0.759,
+    "f1-score": 0.762,
+    "support": 112.0
+  },
+  "accuracy": 0.806,
+  "macro avg": {
+    "precision": 0.783,
+    "recall": 0.783,
+    "f1-score": 0.781,
+    "support": 1546.0
+  },
+  "weighted avg": {
+    "precision": 0.808,
+    "recall": 0.806,
+    "f1-score": 0.805,
+    "support": 1546.0
   }
 }
 ```
@@ -336,16 +391,15 @@ interface ModelInfoResponse {
 **Typy TypeScript:**
 ```typescript
 // types/api.ts
-export interface ModelMetrics {
-  f1: number;
-  accuracy: number;
-  recall: number;
+export interface ClassMetricsData {
   precision: number;
+  recall: number;
+  'f1-score': number;
+  support: number;
 }
 
-export interface ModelInfoResponse {
-  model_name: string;
-  metrics: ModelMetrics;
+export interface ClassificationReportResponse {
+  [className: string]: ClassMetricsData;
 }
 ```
 
@@ -579,6 +633,7 @@ const ImageUploader: React.FC<Props> = ({ ... }) => {
 |----------|--------|------|
 | `/predict` | POST | Klasyfikacja obrazu choroby skory |
 | `/info` | GET | Informacje o modelu i metryki |
+| `/report` | GET | Classification report - metryki per klasa |
 
 ### 9.3 Dockerfile (do rozszerzenia o frontend)
 - **Plik:** `Dockerfile`

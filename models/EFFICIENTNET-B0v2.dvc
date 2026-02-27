@@ -1,0 +1,6 @@
+outs:
+- md5: c7f627351f28046fe492b539fd430678.dir
+  size: 16480030
+  nfiles: 5
+  hash: md5
+  path: EFFICIENTNET-B0v2
