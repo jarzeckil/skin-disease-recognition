@@ -79,7 +79,7 @@ def train(cfg: DictConfig):
         patience=cfg.scheduler.patience,
         factor=cfg.scheduler.factor,
         threshold=cfg.scheduler.threshold,
-        threshold_mode=cfg.scheduler.threshold_mode
+        threshold_mode=cfg.scheduler.threshold_mode,
     )
 
     logger.info('Creating trainer')

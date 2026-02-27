@@ -115,7 +115,7 @@ async def info():
 
     model_info_response = {
         'model_name': artifacts['metadata']['model_name'],
-        'model_version': artifacts['metadata']['version']
+        'model_version': artifacts['metadata']['version'],
     }
 
     metrics_response = {
@@ -129,7 +129,7 @@ async def info():
 
     return response
 
+
 @app.get('/report', status_code=status.HTTP_200_OK)
 async def report():
     return artifacts['report']
-
