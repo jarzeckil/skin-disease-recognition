@@ -90,6 +90,31 @@ The model was trained on a [Kaggle dataset](https://www.kaggle.com/datasets/paci
 | **Vite** | Build tool & dev server |
 | **Tailwind CSS** | Styling |
 
+---
+
+## 🏗 CI/CD & Architecture
+
+The pipeline automates the journey from code commit to production deployment.
+
+```mermaid
+graph LR
+    A[Code Push] -->|Triggers| B(GitHub Actions)
+    B -->|Run Quality Check| C{Quality Check Pass?}
+    
+    C -- No --> F[Fail Build]
+    C -- Yes --> D[DVC Pull]
+    
+    D -->|Fetch Artifacts| E[DAGsHub]
+
+    D --> G1[Docker Build: API]
+    D --> G2[Docker Build: Frontend]
+    
+    G1 --> J1[Push API to Docker Hub]
+    G2 --> J2[Push Front to Docker Hub]
+    
+    J1 --> K[Deployment Ready]
+    J2 --> K
+```
 
 ---
 
