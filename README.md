@@ -11,8 +11,17 @@ An end-to-end deep learning application for skin lesion classification, featurin
 [![FastAPI](https://img.shields.io/badge/FastAPI-009485.svg?logo=fastapi&logoColor=white)](#)
 [![MLflow](https://img.shields.io/badge/MLflow-F4AA41?logo=MLflow&logoColor=black)](#)
 [![Docker](https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=fff)](#)
+[![Microsoft Azure](https://custom-icon-badges.demolab.com/badge/Microsoft%20Azure-0089D6?logo=msazure&logoColor=white)](#)
 [![DVC](https://img.shields.io/badge/DVC-Enabled-945DD6?logo=dvc&logoColor=white)](https://dvc.org/)
 [![React](https://img.shields.io/badge/React-%2320232a.svg?logo=react&logoColor=%2361DAFB)](#)
+
+---
+
+## App is live
+
+[Multi-container app](https://skin-disease-app.calmglacier-31f35a67.polandcentral.azurecontainerapps.io) hosted with Azure Container Apps.
+
+(Revision scales down to 0, so it might take a minute for the service to load)
 
 ---
 
@@ -47,6 +56,7 @@ I chose EfficientNet model family. Compared to traditional architectures like Re
 ---
 
 ## Dataset
+
 The model was trained on a [Kaggle dataset](https://www.kaggle.com/datasets/pacificrm/skindiseasedataset) consisting of 15,400+ clinical images.
 - Data Distribution: The dataset is highly imbalanced (e.g., thousands of Acne samples vs. hundreds of Vasculitis). I mitigated this using WeightedRandomSampler in the training pipeline.
 - Preprocessing: Images were resized to 300×300 pixels to match EfficientNet-B3 requirements.
@@ -80,6 +90,7 @@ The model was trained on a [Kaggle dataset](https://www.kaggle.com/datasets/paci
 | **Docker Compose** | Container orchestration |
 | **Nginx** | Reverse proxy & static serving |
 | **GitHub Actions** | CI/CD pipeline |
+| **Azure Container Apps** | Deployment |
 | **DAGsHub** | DVC remote storage |
 
 ### Frontend
