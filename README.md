@@ -18,18 +18,10 @@ An end-to-end deep learning application for skin lesion classification, featurin
 
 ## Screenshots
 
-<!-- Add your screenshots here -->
-<p align="center">
-  <img src="docs/screenshots/analysis-screen.png" alt="Analysis Screen" width="80%">
-  <br>
-  <em>AI-powered skin lesion analysis with probability distribution</em>
-</p>
+| Prediction | Classification report with per-class metrics heatmap |
+|:---:|:---:|
+| <img width="910" alt="image" src="https://github.com/user-attachments/assets/beb2b97f-5e77-48a2-9606-4caaf7970414" /> | <img width="880" alt="image" src="https://github.com/user-attachments/assets/63abd4da-9ef4-4566-aa15-2626d32c6b5b" /> |
 
-<p align="center">
-  <img src="docs/screenshots/model-performance.png" alt="Model Performance Dashboard" width="80%">
-  <br>
-  <em>Classification report with per-class metrics heatmap</em>
-</p>
 
 ---
 
