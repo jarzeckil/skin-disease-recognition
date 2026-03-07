@@ -34,6 +34,9 @@ jobs:
       - name: Check Formatting
         run: uv run ruff format --check .
 
+      - name: Run Tests
+        run: uv run pytest
+
   build-docker:
     needs: quality-check
     runs-on: ubuntu-latest

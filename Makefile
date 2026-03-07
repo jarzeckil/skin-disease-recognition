@@ -54,7 +54,7 @@ model:
 ## Run tests
 .PHONY: test
 test:
-	uv run python -m pytest tests
+	uv run pytest
 
 
 ## Set up Python interpreter environment
