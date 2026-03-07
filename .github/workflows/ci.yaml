@@ -26,13 +26,16 @@ jobs:
           enable-cache: true
 
       - name: Install the project
-        run: uv sync --locked --all-extras --dev
+        run: uv sync --locked --all-groups --dev
 
       - name: Run Linting (Ruff)
         run: uv run ruff check .
 
       - name: Check Formatting
         run: uv run ruff format --check .
+
+      - name: Run Tests
+        run: uv run pytest
 
   build-docker:
     needs: quality-check
